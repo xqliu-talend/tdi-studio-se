@@ -224,7 +224,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         boolean needAllLibJars = true;
         if (needsShade()) {
             BigDataJobUtil bdUtil = new BigDataJobUtil((ProcessItem) this.getProperty().getItem());
-            if (bdUtil.isMRWithHDInsight() || bdUtil.isSparkWithHDInsight()) {
+            if (bdUtil.isMRWithHDInsight()) {
                 needAllLibJars = false;
             }
         }
@@ -244,7 +244,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
             // In an export mode, we add the job jar which is located in the current working directory
             libJars.append("./" + makeupJobJarName()); //$NON-NLS-1$
         } else {
-            if (!needsShade()) {
+            if (needAllLibJars) {
                 // In a local mode,we must append the routines/beans/udfs jars which are located in the target
                 // directory.
                 ITalendProcessJavaProject routineProject = TalendJavaProjectManager
