@@ -25,6 +25,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Composite;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.commons.ui.swt.actions.ITreeContextualAction;
 import org.talend.components.api.properties.ComponentProperties;
@@ -139,9 +140,14 @@ public class GenericWizardService implements IGenericWizardService {
         if (repObjType == null) {
             return false;
         }
-        List<String> genericTypeNames = getGenericTypeNames();
-        if (genericTypeNames != null && genericTypeNames.contains(repObjType.getType())) {
-            return true;
+        try {
+	        List<String> genericTypeNames = getGenericTypeNames();
+	        if (genericTypeNames != null && genericTypeNames.contains(repObjType.getType())) {
+	            return true;
+	        }
+        } catch (Exception e) {
+        	// only log the error, might happens during junit execution
+        	ExceptionHandler.process(e);
         }
         return false;
     }
