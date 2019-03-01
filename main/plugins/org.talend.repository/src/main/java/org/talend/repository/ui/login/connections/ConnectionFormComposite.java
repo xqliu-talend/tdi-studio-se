@@ -588,7 +588,16 @@ public class ConnectionFormComposite extends Composite {
                     userText.setSelection(selection);
                 }
             }
-            fillBean(false);
+            fillBean(false, false);
+            validateFields();
+        }
+    };
+
+    ModifyListener standardTokenPasswordTextListener = new ModifyListener() {
+
+        @Override
+        public void modifyText(ModifyEvent e) {
+            fillBean(false, true);
             validateFields();
         }
     };
@@ -599,7 +608,7 @@ public class ConnectionFormComposite extends Composite {
         public void selectionChanged(SelectionChangedEvent e) {
             showHideDynamicsControls();
             validateFields();
-            fillBean(true);
+            fillBean(true, true);
             showHideTexts();
             changeUserLabel();
         }
@@ -660,8 +669,8 @@ public class ConnectionFormComposite extends Composite {
         nameText.addModifyListener(standardTextListener);
         descriptionText.addModifyListener(standardTextListener);
         userText.addModifyListener(standardTextListener);
-        passwordText.addModifyListener(standardTextListener);
-        tokenText.addModifyListener(standardTextListener);
+        passwordText.addModifyListener(standardTokenPasswordTextListener);
+        tokenText.addModifyListener(standardTokenPasswordTextListener);
         workSpaceText.addModifyListener(standardTextListener);
 
         for (IRepositoryFactory f : dynamicControls.keySet()) {
@@ -750,8 +759,8 @@ public class ConnectionFormComposite extends Composite {
         nameText.removeModifyListener(standardTextListener);
         descriptionText.removeModifyListener(standardTextListener);
         userText.removeModifyListener(standardTextListener);
-        passwordText.removeModifyListener(standardTextListener);
-        tokenText.removeModifyListener(standardTextListener);
+        passwordText.removeModifyListener(standardTokenPasswordTextListener);
+        tokenText.removeModifyListener(standardTokenPasswordTextListener);
         workSpaceText.removeModifyListener(standardTextListener);
 
         for (IRepositoryFactory f : dynamicControls.keySet()) {
@@ -770,7 +779,7 @@ public class ConnectionFormComposite extends Composite {
         deleteProjectsButton.removeSelectionListener(deleteProjectClickListener);
     }
 
-    private void fillBean(boolean cleanDynamicValue) {
+    private void fillBean(boolean cleanDynamicValue, boolean enableHidePassword) {
         if (connection != null) {
             IRepositoryFactory repository = getRepository();
             if (repository != null) {
@@ -823,17 +832,18 @@ public class ConnectionFormComposite extends Composite {
             connection.setName(nameText.getText());
             connection.setDescription(descriptionText.getText());
             connection.setUser(userText.getText());
-            String password = getPassword(); // $NON-NLS-1$
-            if (StringUtils.isEmpty(password)) {
-                if (tokenButton.getSelection()) {
-                    password = tokenText.getText();
-                } else {
-                    password = passwordText.getText();
+            if (enableHidePassword) {
+                String password = getPassword(); // $NON-NLS-1$
+                if (StringUtils.isEmpty(password)) {
+                    if (tokenButton.getSelection()) {
+                        password = tokenText.getText();
+                    } else {
+                        password = passwordText.getText();
+                    }
                 }
+                connection.setPassword(password);
+                connection.setToken(tokenButton.getSelection());
             }
-            connection.setPassword(password);
-            connection.setToken(tokenButton.getSelection());
-
             connection.setWorkSpace(workSpaceText.getText());
 
             connectionsListComposite.refresh(connection);
