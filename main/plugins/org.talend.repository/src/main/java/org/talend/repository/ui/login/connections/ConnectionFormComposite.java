@@ -567,7 +567,7 @@ public class ConnectionFormComposite extends Composite {
     }
 
     private String getPassword() {
-        return passwordText.getText();
+        return password;
     }
 
     private String getWorkspace() {
