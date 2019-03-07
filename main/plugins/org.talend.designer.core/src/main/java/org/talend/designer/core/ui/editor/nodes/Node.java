@@ -92,6 +92,7 @@ import org.talend.core.model.process.Problem;
 import org.talend.core.model.process.Problem.ProblemStatus;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.ExternalNodesFactory;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.ContextParameterUtils;
@@ -3000,6 +3001,7 @@ public class Node extends Element implements IGraphicalNode {
 
             checktAggregateRow(param);
 
+            checkDynamicJobUsage(param);
         }
 
         checkJobletConnections();
@@ -3121,6 +3123,25 @@ public class Node extends Element implements IGraphicalNode {
                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
             }
         }
+    }
+
+    private void checkDynamicJobUsage(IElementParameter param) {
+        if (!EParameterName.USE_DYNAMIC_JOB.getName().equals(param.getName())) {
+            return;
+        }
+        boolean isSelectUseDynamic = false;
+        Object paramValue = param.getValue();
+        if (paramValue != null && paramValue instanceof Boolean) {
+            isSelectUseDynamic = (Boolean) paramValue;
+        }
+        if (isSelectUseDynamic) {
+            ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(process.getProperty().getItem());
+            if (ERepositoryObjectType.getAllTypesOfJoblet().contains(itemType)) {
+                String warningMessage = Messages.getString("Node.checkDynamicJobUsageWarning");
+                Problems.add(ProblemStatus.WARNING, this, warningMessage);
+            }
+        }
+
     }
 
     private void checkJobletConnections() {
