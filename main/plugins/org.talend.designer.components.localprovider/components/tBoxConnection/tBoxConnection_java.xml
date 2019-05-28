@@ -78,7 +78,7 @@
                 MODULE="jackson-databind-2.9.9.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.9" 
                 REQUIRED="true" />
             <IMPORT NAME="jackson-annotations"
-                MODULE="jackson-annotations-2.9.9.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.9" 
+                MODULE="jackson-annotations-2.9.0.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0" 
                 REQUIRED="true" />
             <IMPORT NAME="apache-http-client"
                 MODULE="httpclient-4.2.5.jar" MVN="mvn:org.talend.libraries/httpclient-4.2.5/6.0.0" 
