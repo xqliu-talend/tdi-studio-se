@@ -195,9 +195,8 @@
             <IMPORT NAME="guava-jdk5-13.0.jar" MODULE="guava-jdk5-13.0.jar"
                     MVN="mvn:org.talend.libraries/guava-jdk5-13.0/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.guava/lib/guava-jdk5-13.0.jar" REQUIRED="true"/>
-            <IMPORT NAME="jackson-core-2.9.5.jar" MODULE="jackson-core-2.9.5.jar"
-                    MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.5"
-                    UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.9.5.jar" REQUIRED="true"/>
+            <IMPORT NAME="jackson-core-2.9.9.jar" MODULE="jackson-core-2.9.9.jar"
+                    MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.9" REQUIRED="true"/>
             <IMPORT NAME="google-cloud-bigquery-1.32.0.jar" MODULE="google-cloud-bigquery-1.32.0.jar"
                     MVN="mvn:com.google.cloud/google-cloud-bigquery/1.32.0"
                     REQUIRED_IF="AUTH_MODE == 'SERVICEACCOUNT'"/>
