@@ -89,8 +89,10 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.ui.context.nattableTree.ContextNatTableUtils;
 import org.talend.core.ui.export.ArchiveFileExportOperationFullPath;
 import org.talend.core.ui.export.FileSystemExporterFullPath;
 import org.talend.designer.core.IDesignerCoreService;
@@ -448,9 +450,9 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             public void widgetSelected(SelectionEvent e) {
                 selectedJobVersion = versionCombo.getText();
                 if(selectedJobVersion.equals(currentVersion) || selectedJobVersion.equals(RelationshipItemBuilder.LATEST_VERSION)){
-                	executeTestsButton.setEnabled(true);
+                    executeTestsButton.setEnabled(true);
                 }else{
-                	executeTestsButton.setEnabled(false);
+                    executeTestsButton.setEnabled(false);
                     executeTestsButton.setSelection(false);
                 }
             }
@@ -761,10 +763,10 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
     }
 
     protected boolean isAddJavaSources() {
-        if (optionTypeCombo.isVisible()) {
+        if (optionTypeCombo != null && optionTypeCombo.isVisible()) {
             return isBinaries() ? jobScriptButton.getSelection() : true;
         } else {
-            return jobScriptButton.getSelection();
+            return jobScriptButton == null ? false : jobScriptButton.getSelection();
         }
     }
 
@@ -805,11 +807,11 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
     }
     
     protected String getLauncherName() {
-    	if(shellLauncherButton != null && !shellLauncherButton.isDisposed() && shellLauncherButton.getSelection()){
-    		if (launcherCombo != null && !launcherCombo.isDisposed()) {
+        if (shellLauncherButton != null && !shellLauncherButton.isDisposed() && shellLauncherButton.getSelection()) {
+            if (launcherCombo != null && !launcherCombo.isDisposed()) {
                 return launcherCombo.getText();
             }
-    	}
+        }
         return null;
     }
 
@@ -1051,6 +1053,17 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                         if (changeControl && PasswordEncryptUtil.isPasswordType(type)) {
                             setStyle(oldStyle | SWT.PASSWORD);
                         }
+                        if (ContextNatTableUtils.isResourceType(type)) {
+                            // to fix wrong display after click
+                            setStyle(SWT.READ_ONLY);
+                            String parameterValue = ((ContextParameterType) obj).getValue();
+                            if (parameterValue.contains("|")) {
+                                String[] part = parameterValue.split("\\|");
+                                if (part.length > 1) {
+                                    value = JavaResourcesHelper.getResouceClasspath(part[0], part[1]);
+                                }
+                            }
+                        }
                     }
 
                     if (changeControl) {
@@ -1188,6 +1201,18 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                     String rawValue = contextParameter.getRawValue();
                     if (rawValue != null && PasswordEncryptUtil.isPasswordType(contextParameter.getType())) {
                         return PasswordEncryptUtil.getPasswordDisplay(rawValue);
+                    }
+                    if (ContextNatTableUtils.isResourceType(contextParameter.getType())) {
+                        String parameterValue = contextParameter.getValue();
+                        if (parameterValue.contains("|")) {
+                            String[] part = parameterValue.split("\\|");
+                            if (part.length > 1) {
+                                String resource = JavaResourcesHelper.getResouceClasspath(part[0], part[1]);
+                                if (resource != null) {
+                                    return resource;
+                                }
+                            }
+                        }
                     }
                     return rawValue;
                 }
@@ -1605,7 +1630,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
 
     protected Map<ExportChoice, Object> getExportChoiceMap() {
         Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
-        exportChoiceMap.put(ExportChoice.needLauncher, shellLauncherButton.getSelection());
+        exportChoiceMap.put(ExportChoice.needLauncher, shellLauncherButton == null ? false : shellLauncherButton.getSelection());
         exportChoiceMap.put(ExportChoice.launcherName, getLauncherName());
         exportChoiceMap.put(ExportChoice.needSystemRoutine, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needUserRoutine, Boolean.TRUE);

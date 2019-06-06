@@ -62,15 +62,16 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.service.IESBMicroService;
 import org.talend.core.ui.branding.IBrandingService;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessor;
+import org.talend.repository.constants.BuildJobConstants;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.BuildJobFactory;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManagerFactory;
@@ -290,8 +291,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
      */
     protected List<JobExportType> extractExportJobTypes() {
         // Feature TDI-29084:put the Deprecated build type at last
-        List<JobExportType> deprecateTypeList = new ArrayList<JobExportType>();
-        List<JobExportType> typeList = new ArrayList<JobExportType>();
+        List<JobExportType> deprecateTypeList = new ArrayList<>();
+        List<JobExportType> typeList = new ArrayList<>();
         for (JobExportType type : JobExportType.values()) {
             if (!type.deprecate) {
                 typeList.add(type);
@@ -385,7 +386,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         // createExportTree(pageComposite);
         if (!isMultiNodes()) {
             IBrandingService brandingService =
-                    (IBrandingService) GlobalServiceRegister.getDefault().getService(IBrandingService.class);
+                    GlobalServiceRegister.getDefault().getService(IBrandingService.class);
             boolean allowVerchange = brandingService.getBrandingConfiguration().isAllowChengeVersion();
             if (allowVerchange) {
                 createJobVersionGroup(pageComposite);
@@ -439,11 +440,39 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         exportTypeCombo = new Combo(left, SWT.PUSH);
         exportTypeCombo.setLayoutData(new GridData());
 
+        boolean canESBMicroServiceJob = EmfModelUtils.getComponentByName(getProcessItem(), "tRESTRequest") != null;
+        boolean isESBJob = false;
+
+        for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
+            if (o instanceof NodeType) {
+                NodeType currentNode = (NodeType) o;
+                if (BuildJobConstants.esbComponents.contains(currentNode.getComponentName())) {
+                    isESBJob = true;
+                    break;
+                }
+            }
+        }
+
         for (JobExportType exportType : extractExportJobTypes()) {
             if (!Boolean.getBoolean("talend.export.job.2." + exportType.toString() + ".hide")) { //$NON-NLS-1$//$NON-NLS-2$
                 // TESB-20767 Microservice should not be display with TDI license
-                if (exportType.equals(JobExportType.MSESB)) {
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
+                if (exportType == JobExportType.ROUTE || exportType == JobExportType.SERVICE) {
+                    continue;
+                } else if (exportType.equals(JobExportType.OSGI)) {
+                    if (isESBJob) {
+                        exportTypeCombo.add(exportType.label);
+                    }
+                } else if (exportType.equals(JobExportType.MSESB)) {
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class) && canESBMicroServiceJob) {
+                        exportTypeCombo.add(exportType.label);
+                    } else {
+                        // reset export type to POJO
+                        if (getCurrentExportType1().equals(JobExportType.MSESB)) {
+                            getDialogSettings().put(STORE_EXPORTTYPE_ID, JobExportType.POJO.label);
+                        }
+                    }
+                } else if (exportType.equals(JobExportType.MSESB_IMAGE)) {
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class) && canESBMicroServiceJob) {
                         exportTypeCombo.add(exportType.label);
                     } else {
                         // reset export type to POJO
@@ -452,6 +481,11 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                         }
                     }
                 } else if (exportType.equals(JobExportType.IMAGE)) {
+
+                    if (canESBMicroServiceJob) {
+                        continue;
+                    }
+
                     if (PluginChecker.isDockerPluginLoaded()) {
                         exportTypeCombo.add(exportType.label);
                     } else {
@@ -460,6 +494,11 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                         }
                     }
                 } else {
+
+                    if ((canESBMicroServiceJob && exportType == JobExportType.POJO)) {
+                        continue;
+                    }
+
                     exportTypeCombo.add(exportType.label);
                 }
             }
@@ -471,7 +510,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             final Object buildType =
                     item.getProperty().getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
             if (buildType != null) {
-                Map<JobExportType, String> map = BuildJobFactory.oldBuildTypeMap;
+                Map<JobExportType, String> map = BuildJobConstants.oldBuildTypeMap;
                 for (JobExportType t : map.keySet()) {
                     if (buildType.toString().equals(map.get(t))) { // same build type
                         label2 = t.label;
@@ -1044,7 +1083,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         if (comboType.equals(JobExportType.POJO)) {
             return JavaJobScriptsExportWSWizardPage.super.getExportChoiceMap();
         }
-        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
+        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<>(ExportChoice.class);
         exportChoiceMap.put(ExportChoice.needJobItem, false);
         exportChoiceMap.put(ExportChoice.needSourceCode, false);
 
@@ -1097,7 +1136,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     }
 
     private Map<ExportChoice, Object> getExportChoiceMapForMSESBImage() {
-        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
+        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<>(ExportChoice.class);
         exportChoiceMap.put(ExportChoice.buildImage, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needLauncher, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.launcherName, JobScriptsManager.UNIX_ENVIRONMENT);
@@ -1139,7 +1178,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     }
 
     private Map<ExportChoice, Object> getExportChoiceMapForImage() {
-        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
+        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<>(ExportChoice.class);
         exportChoiceMap.put(ExportChoice.buildImage, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needLauncher, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.launcherName, JobScriptsManager.UNIX_ENVIRONMENT);

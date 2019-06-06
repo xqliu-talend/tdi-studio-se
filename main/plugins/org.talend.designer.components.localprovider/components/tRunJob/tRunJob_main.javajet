@@ -255,6 +255,11 @@ String inputConnName = null;
 			}
 		<%
 		}
+		%>
+		if(enableLogStash){
+			paraList_<%=cid %>.add("--monitoring="+enableLogStash);
+		}
+		<%
 	}
 	%>
 	//for feature:10589

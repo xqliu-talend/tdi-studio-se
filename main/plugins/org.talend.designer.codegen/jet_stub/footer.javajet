@@ -220,6 +220,8 @@
     public long startTime = 0;
     public boolean isChildJob = false;
     public String log4jLevel = "";
+    
+    private boolean enableLogStash;
 
     private boolean execStat = true;
 
@@ -431,7 +433,7 @@
     public int runJobInTOS(String[] args) {
 	   	// reset status
 	   	status = "";
-
+	   	
         String lastStr = "";
         for (String arg : args) {
             if (arg.equalsIgnoreCase("--context_param")) {
@@ -465,6 +467,31 @@
     	    }
         	log.info("TalendJob: '<%=codeGenArgument.getJobName()%>' - Start.");
     	<%}%>
+    	
+    	<%
+    	List<? extends INode> jobCatcherNodes = process.getNodesOfType("tJobStructureCatcher");
+    	for (INode jobStructureCatcher : jobCatcherNodes) {
+    		String location = ElementParameterParser.getValue(jobStructureCatcher, "__LOCATION__");
+		%>
+			if(enableLogStash) {
+				java.util.Properties properties_<%=jobStructureCatcher.getUniqueName()%> = new java.util.Properties();
+				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("root.logger", "audit");
+				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("encoding", "UTF-8");
+				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("application.name", "Talend Studio");
+				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("service.name", "Talend Studio Job");
+				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("instance.name", "Talend Studio Job Instance");
+				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("propagate.appender.exceptions", "none");
+				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("log.appender", "file");
+				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("appender.file.path", <%=location%>);
+				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("appender.file.maxsize", "52428800");
+				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("appender.file.maxbackup", "20");
+				
+				auditLogger_<%=jobStructureCatcher.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(properties_<%=jobStructureCatcher.getUniqueName()%>);
+			}
+		<%
+			break;
+		}
+    	%>
 
         if(clientHost == null) {
             clientHost = defaultClientHost;
@@ -741,7 +768,7 @@ if(execStat) {
         <%=statCatcherNode.getUniqueName() %>.addMessage("begin");
 <%
         }
-
+        
         List<INode> prejobNodes = new ArrayList<INode>();
 
         List<INode> postjobNodes = new ArrayList<INode>();
@@ -832,6 +859,20 @@ this.globalResumeTicket = true;//to run tPreJob
         }
 <%
         }
+        
+        for (INode jobCatcherNode : jobCatcherNodes) {
+%>
+		if(enableLogStash) {
+	        <%=jobCatcherNode.getUniqueName() %>.addJobStartMessage();
+	        try {
+	            <%=jobCatcherNode.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
+	        } catch (java.lang.Exception e) {
+	            e.printStackTrace();
+	        }
+        }
+<%
+			break;
+        }
 %>
 
 this.globalResumeTicket = false;//to run others jobs
@@ -856,7 +897,7 @@ this.globalResumeTicket = false;//to run others jobs
 
             if(implicit_Context!=null && implicit_Context.getUniqueName().equals(uniqueName)) continue;
 
-            if (!componentName.equals("tLogCatcher") && !componentName.equals("tFlowMeterCatcher") && !componentName.equals("tAssertCatcher") && !componentName.equals("tStatCatcher")) {
+            if (!componentName.equals("tJobStructureCatcher") && !componentName.equals("tLogCatcher") && !componentName.equals("tFlowMeterCatcher") && !componentName.equals("tAssertCatcher") && !componentName.equals("tStatCatcher")) {
 %>
         runningThreadCount.add(1);
         new Thread(){
@@ -920,7 +961,7 @@ this.globalResumeTicket = false;//to run others jobs
             if("tHadoopConfManager".equals(componentName)) continue;
             if(implicit_Context!=null && implicit_Context.getUniqueName().equals(uniqueName)) continue;
 
-            if (!componentName.equals("tLogCatcher") && !componentName.equals("tFlowMeterCatcher") && !componentName.equals("tAssertCatcher") && !componentName.equals("tStatCatcher") && !componentName.equals("tAsyncIn")) {
+            if (!componentName.equals("tJobStructureCatcher") && !componentName.equals("tLogCatcher") && !componentName.equals("tFlowMeterCatcher") && !componentName.equals("tAssertCatcher") && !componentName.equals("tStatCatcher") && !componentName.equals("tAsyncIn")) {
 %>
 <%=createCallProcess(rootNode, className, false) %>
 <%    }
@@ -965,6 +1006,20 @@ this.globalResumeTicket = true;//to run tPostJob
         }
 <%
     }
+    
+    for (INode jobCatcherNode : jobCatcherNodes) {
+%>
+		if(enableLogStash) {
+	        <%=jobCatcherNode.getUniqueName() %>.addJobEndMessage(startTime, end, status);
+	        try {
+	            <%=jobCatcherNode.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
+	        } catch (java.lang.Exception e) {
+	            e.printStackTrace();
+	        }
+        }
+<%
+			break;
+        }
 %>
 
 <% if (exist_tMOM) { %>
@@ -1447,10 +1502,15 @@ if (execStat) {
                     context_param.put(keyValue.substring(0, index), keyValue.substring(index + 1) );
                 }
             }
-        }else if (arg.startsWith("--log4jLevel=")) {
+        } else if (arg.startsWith("--log4jLevel=")) {
             log4jLevel = arg.substring(13);
+		} else if (arg.startsWith("--monitoring=")) {//for trunjob call
+			enableLogStash = "true".equalsIgnoreCase(arg.substring(13));
 		}
-
+		
+		if(!enableLogStash) {
+			enableLogStash = "true".equalsIgnoreCase(System.getProperty("monitoring"));
+		}
     }
     
     private static final String NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY = "<TALEND_NULL>";

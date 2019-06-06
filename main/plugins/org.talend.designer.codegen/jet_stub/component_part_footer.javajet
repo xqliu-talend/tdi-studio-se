@@ -47,32 +47,98 @@ iterateConnSet.addAll(node.getOutgoingConnections(EConnectionType.ITERATE));
 
 List<IConnection> allSubProcessConnection = codeGenArgument.getAllMainSubTreeConnections();
 
-if((codePart.equals(ECodePart.END))&&(stat)){
+String cid = node.getUniqueName();
+
+List<? extends INode> jobCatcherNodes = process.getNodesOfType("tJobStructureCatcher");
+boolean enableLogStash = jobCatcherNodes != null && !jobCatcherNodes.isEmpty();
+boolean logstashCurrent = !cid.startsWith("tJobStructureCatcher") && !cid.startsWith("talend") && enableLogStash;
+
+if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
 	boolean iterateInVFComp = (node.getVirtualLinkTo() != null && node.getVirtualLinkTo() == EConnectionType.ITERATE);
 	if(iterateInVFComp){
 		List<String> needToEndConnNames = new ArrayList<String>();
 		INode nextNode = node.getOutgoingConnections(EConnectionType.ITERATE).get(0).getTarget();
 		NodeUtil.fillConnectionsForStat(needToEndConnNames, nextNode);
 		%>
+		
+		<%if(stat) {%>
 		if(execStat){
 			<%
 			for(String connName : needToEndConnNames){
 			%>
-				runStat.updateStatOnConnection("<%=connName%>"+iterateId,2, 0); 
-			<%	
+				runStat.updateStatOnConnection("<%=connName%>"+iterateId,2, 0);
+			<%
 			}
 			%>
 		}
+		<%}%>
+		
+		<%if(logstashCurrent) {//now only finish the log, not send, TODO%>
+		if(enableLogStash){
+			<%
+			for(String connName : needToEndConnNames){
+			%>
+				runStat.logStatOnConnection("<%=connName%>"+iterateId,2, 0);
+			<%
+			}
+			%>
+		}
+		<%
+		}
+		%>
 	<%
 	}
 	if(connSet.size()>0){
 	  	for(IConnection con:connSet){
+	  		INode source = con.getSource();
+			String sourceNodeId = source.getUniqueName();
+			String sourceNodeComponent = source.getComponent().getName();
 		%>
+			<%if(stat) {%>
 			if(execStat){
 				if(resourceMap.get("inIterateVComp") == null || !((Boolean)resourceMap.get("inIterateVComp"))){
-			 		runStat.updateStatOnConnection("<%=con.getUniqueName()%>"+iterateId,2, 0); 
+	 				runStat.updateStatOnConnection("<%=con.getUniqueName()%>"+iterateId,2, 0);
 			 	}
 			}
+			<%}%>
+			
+			<%if(logstashCurrent) {%>
+			if(enableLogStash){
+				if(resourceMap.get("inIterateVComp") == null || !((Boolean)resourceMap.get("inIterateVComp"))){
+			 		<%
+		 			for (INode jobStructureCatcher : jobCatcherNodes) {
+		 			%>
+			 		RunStat.StatBean talend_statebean = runStat.logStatOnConnection("<%=con.getUniqueName()%>"+iterateId,2, 0);
+			 		
+			 		<%=jobStructureCatcher.getUniqueName() %>.addConnectionMessage(
+					    "<%=sourceNodeId%>", 
+					    "<%=sourceNodeComponent%>", 
+					    false,
+					    "<%="REJECT".equals(con.getConnectorName()) ? "reject" : "output"%>",
+					    "<%=con.getUniqueName()%>",
+					    talend_statebean.getNbLine(),
+					    talend_statebean.getStartTime(),
+					    talend_statebean.getEndTime()
+					);
+					
+			 		<%=jobStructureCatcher.getUniqueName() %>.addConnectionMessage(
+					    "<%=node.getUniqueName()%>", 
+					    "<%=node.getComponent().getName()%>", 
+					    true,
+					    "input",
+					    "<%=con.getUniqueName()%>",
+					    talend_statebean.getNbLine(),
+					    talend_statebean.getStartTime(),
+					    talend_statebean.getEndTime()
+					);
+					<%=jobStructureCatcher.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
+					<%
+						break;
+					}
+					%>
+			 	}
+			}
+			<%}%>
 		<%
 	  	}
 	}
