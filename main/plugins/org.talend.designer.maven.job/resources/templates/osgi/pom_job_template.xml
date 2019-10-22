@@ -13,7 +13,7 @@
 	<artifactId>@JobArtifactId@-bundle</artifactId>
 	<version>@JobVersion@</version>
 	<packaging>bundle</packaging>
-    <name>@ProjectName@ @JobName@-@JobVersion@ (@TalendJobVersion@,@JobType@)</name>
+    <name>@ProjectName@ @JobName@-${project.version} (@TalendJobVersion@,@JobType@)</name>
 	
     <properties>
 		<item.name>@ItemName@</item.name>
@@ -254,41 +254,5 @@
                 <microservice.running.configs.dir>${current.resources.dir}/</microservice.running.configs.dir>
             </properties>
         </profile>
-        <profile>
-          <id>deploy-nexus</id>
-          <activation>
-            <property>
-              <name>altDeploymentRepository</name>
-            </property>
-          </activation>
-          <build>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.7</version>
-                    <executions>
-                        <execution>
-                            <id>deploy-file</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>deploy-file</goal>
-                            </goals>
-                            <configuration>
-                                <file>${basedir}/src/main/resources/feature/feature.xml</file>
-                                <groupId>${project.groupId}</groupId>
-                                <artifactId>${talend.job.name}-feature</artifactId>
-                                <version>${project.version}</version>
-                                <classifier>features</classifier>
-                                <packaging>xml</packaging>
-                                <repositoryId>${project.distribution-management.repository.id}</repositoryId>
-                                <url>${project.distribution-management.repository.url}</url>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-          </build>
-        </profile>
-            
     </profiles>
 </project>
