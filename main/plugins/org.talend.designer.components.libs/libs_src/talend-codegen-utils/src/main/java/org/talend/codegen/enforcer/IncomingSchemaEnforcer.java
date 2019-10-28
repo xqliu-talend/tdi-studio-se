@@ -168,6 +168,7 @@ public class IncomingSchemaEnforcer {
         if ("id_Date".equals(diType) && fieldPattern != null) {
             field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, fieldPattern);
         }
+        field.addProp("di.column.talendType", diType);
         dynamicFields.add(field);
     }
 
