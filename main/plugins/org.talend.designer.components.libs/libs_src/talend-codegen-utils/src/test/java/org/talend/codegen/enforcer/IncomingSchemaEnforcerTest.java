@@ -58,12 +58,12 @@ public class IncomingSchemaEnforcerTest {
     @Before
     public void setup() {
         Schema componentSchema = SchemaBuilder.builder().record("Record").fields() //
-                .name("id").type().intType().noDefault() //
-                .name("name").type().stringType().noDefault() //
-                .name("age").type().intType().noDefault() //
-                .name("valid").type().booleanType().noDefault() //
-                .name("address").type().stringType().noDefault() //
-                .name("comment").type().stringType().noDefault() //
+                .name("id").prop("di.column.talendType", "id_Integer").type().intType().noDefault() //
+                .name("name").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
+                .name("age").prop("di.column.talendType", "id_Integer").type().intType().noDefault() //
+                .name("valid").prop("di.column.talendType", "id_Boolean").type().booleanType().noDefault() //
+                .name("address").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
+                .name("comment").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
                 .endRecord();
         componentRecord = new GenericData.Record(componentSchema);
         componentRecord.put(0, 1);
@@ -141,9 +141,9 @@ public class IncomingSchemaEnforcerTest {
                 .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
                 .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
                 .fields() //
-                .name("valid").type().booleanType().noDefault() //
-                .name("address").type().stringType().noDefault() //
-                .name("comment").type().stringType().noDefault() //
+                .name("valid").prop("di.column.talendType", "id_Boolean").type().booleanType().noDefault() //
+                .name("address").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
+                .name("comment").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
                 .endRecord();
 
         IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
@@ -186,9 +186,9 @@ public class IncomingSchemaEnforcerTest {
                 .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
                 .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
                 .fields() //
-                .name("valid").type().booleanType().noDefault() //
-                .name("address").type().stringType().noDefault() //
-                .name("comment").type().stringType().noDefault() //
+                .name("valid").prop("di.column.talendType", "id_Boolean").type().booleanType().noDefault() //
+                .name("address").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
+                .name("comment").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
                 .endRecord();
 
         IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
@@ -228,9 +228,9 @@ public class IncomingSchemaEnforcerTest {
     @Test
     public void testDynamicColumnDynamicColumnAtMiddleOld() {
         Schema designSchema = SchemaBuilder.builder().record("Record").fields() //
-                .name("id").type().intType().noDefault() //
-                .name("address").type().stringType().noDefault() //
-                .name("comment").type().stringType().noDefault() //
+                .name("id").prop("di.column.talendType", "id_Integer").type().intType().noDefault() //
+                .name("address").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
+                .name("comment").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
                 .endRecord();
         designSchema = AvroUtils.setIncludeAllFields(designSchema, true);
         designSchema = AvroUtils.setProperty(designSchema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1");
@@ -275,9 +275,9 @@ public class IncomingSchemaEnforcerTest {
                 .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1") //
                 .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
                 .fields() //
-                .name("id").type().intType().noDefault() //
-                .name("address").type().stringType().noDefault() //
-                .name("comment").type().stringType().noDefault() //
+                .name("id").prop("di.column.talendType", "id_Integer").type().intType().noDefault() //
+                .name("address").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
+                .name("comment").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
                 .endRecord();
 
         IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
@@ -318,9 +318,9 @@ public class IncomingSchemaEnforcerTest {
     public void testDynamicColumnDynamicColumnAtEndOld() {
         // The expected schema after enforcement.
         Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("id").type().intType().noDefault() //
-                .name("name").type().stringType().noDefault() //
-                .name("age").type().intType().noDefault() //
+                .name("id").prop("di.column.talendType", "id_Integer").type().intType().noDefault() //
+                .name("name").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
+                .name("age").prop("di.column.talendType", "id_Integer").type().intType().noDefault() //
                 .endRecord();
         talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
         talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
@@ -365,9 +365,9 @@ public class IncomingSchemaEnforcerTest {
                 .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3") //
                 .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
                 .fields() //
-                .name("id").type().intType().noDefault() //
-                .name("name").type().stringType().noDefault() //
-                .name("age").type().intType().noDefault() //
+                .name("id").prop("di.column.talendType", "id_Integer").type().intType().noDefault() //
+                .name("name").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
+                .name("age").prop("di.column.talendType", "id_Integer").type().intType().noDefault() //
                 .endRecord();
 
         IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
@@ -457,7 +457,7 @@ public class IncomingSchemaEnforcerTest {
     @Test
     public void testDynamicColumnALLSupportedType() {
         Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("valid").type().booleanType().noDefault() //
+                .name("valid").prop("di.column.talendType", "id_Boolean").type().booleanType().noDefault() //
                 .endRecord();
         talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
         talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0");
@@ -568,22 +568,23 @@ public class IncomingSchemaEnforcerTest {
     public void testAddDynamicFieldAllTypes() {
         Schema expectedRuntimeSchema = SchemaBuilder.builder().record("Record") //
                 .fields() //
-                .name("Test_String").type().stringType().noDefault() //
-                .name("Test_Boolean").type().booleanType().noDefault() //
-                .name("Test_Integer").type().intType().noDefault() //
-                .name("Test_Long").type().longType().noDefault() //
-                .name("Test_Double").type().doubleType().noDefault() //
-                .name("Test_Float").type().floatType().noDefault() //
-                .name("Test_BigDecimal").type(AvroUtils._decimal()).noDefault() //
+                .name("Test_String").prop("di.column.talendType", "id_String").type().stringType().noDefault() //
+                .name("Test_Boolean").prop("di.column.talendType", "id_Boolean").type().booleanType().noDefault() //
+                .name("Test_Integer").prop("di.column.talendType", "id_Integer").type().intType().noDefault() //
+                .name("Test_Long").prop("di.column.talendType", "id_Long").type().longType().noDefault() //
+                .name("Test_Double").prop("di.column.talendType", "id_Double").type().doubleType().noDefault() //
+                .name("Test_Float").prop("di.column.talendType", "id_Float").type().floatType().noDefault() //
+                .name("Test_BigDecimal").prop("di.column.talendType", "id_BigDecimal").type(AvroUtils._decimal()).noDefault() //
                 .name("Test_Date").prop(SchemaConstants.TALEND_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'")
-                .type(AvroUtils._date()).noDefault() //
-                .name("Test_Byte").type(AvroUtils._byte()).noDefault() //
-                .name("Test_Short").type(AvroUtils._short()).noDefault() //
-                .name("Test_Character").type(AvroUtils._character()).noDefault() //
-                .name("TestLogicalDate").type(AvroUtils._logicalDate()).noDefault() //
-                .name("TestLogicalTimeMillis").type(AvroUtils._logicalTime()).noDefault() //
-                .name("TestLogicalTimestampMillis").type(AvroUtils._logicalTimestamp()).noDefault() //
-                .name("valid").type().booleanType().noDefault() //
+                .prop("di.column.talendType", "id_Date").type(AvroUtils._date()).noDefault() //
+                .name("Test_Byte").prop("di.column.talendType", "id_Byte").type(AvroUtils._byte()).noDefault() //
+                .name("Test_Short").prop("di.column.talendType", "id_Short").type(AvroUtils._short()).noDefault() //
+                .name("Test_Character").prop("di.column.talendType", "id_Character").type(AvroUtils._character()).noDefault() //
+                .name("TestLogicalDate").prop("di.column.talendType", "id_Date").type(AvroUtils._logicalDate()).noDefault() //
+                .name("TestLogicalTimeMillis").prop("di.column.talendType", "id_Date").type(AvroUtils._logicalTime()).noDefault() //
+                .name("TestLogicalTimestampMillis").prop("di.column.talendType", "id_Date").type(AvroUtils._logicalTimestamp())
+                .noDefault() //
+                .name("valid").prop("di.column.talendType", "id_Boolean").type().booleanType().noDefault() //
                 .endRecord(); //
 
         Schema designSchema = SchemaBuilder.builder().record("Record") //
@@ -591,7 +592,7 @@ public class IncomingSchemaEnforcerTest {
                 .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'") //
                 .fields() //
-                .name("valid").type().booleanType().noDefault() //
+                .name("valid").prop("di.column.talendType", "id_Boolean").type().booleanType().noDefault() //
                 .endRecord();
 
         IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
@@ -608,7 +609,7 @@ public class IncomingSchemaEnforcerTest {
         enforcer.addDynamicField("Test_Short", "id_Short", null, null, null, false);
         enforcer.addDynamicField("Test_Character", "id_Character", null, null, null, false);
         enforcer.addDynamicField("TestLogicalDate", "id_Date", "date", null, null, false);
-        enforcer.addDynamicField("TestLogicalTimeMillis", "id_Integer", "time-millis", null, null, false);
+        enforcer.addDynamicField("TestLogicalTimeMillis", "id_Date", "time-millis", null, null, false);
         enforcer.addDynamicField("TestLogicalTimestampMillis", "id_Date", "timestamp-millis", null, null, false);
 
         enforcer.createRuntimeSchema();
@@ -666,17 +667,18 @@ public class IncomingSchemaEnforcerTest {
     public void testAddDynamicFieldNullable() {
         Schema expectedRuntimeSchema = SchemaBuilder.builder().record("Record") //
                 .fields() //
-                .name("Test_BigDecimal").type(AvroUtils.wrapAsNullable(AvroUtils._decimal())).noDefault() //
+                .name("Test_BigDecimal").prop("di.column.talendType", "id_BigDecimal")
+                .type(AvroUtils.wrapAsNullable(AvroUtils._decimal())).noDefault() //
                 .name("Test_Date").prop(SchemaConstants.TALEND_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'")
-                .type(AvroUtils.wrapAsNullable(AvroUtils._date())).noDefault() //
-                .name("valid").type().booleanType().noDefault() //
+                .prop("di.column.talendType", "id_Date").type(AvroUtils.wrapAsNullable(AvroUtils._date())).noDefault() //
+                .name("valid").prop("di.column.talendType", "id_Boolean").type().booleanType().noDefault() //
                 .endRecord(); //
 
         Schema designSchema = SchemaBuilder.builder().record("Record").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
                 .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'") //
                 .fields() //
-                .name("valid").type().booleanType().noDefault() //
+                .name("valid").prop("di.column.talendType", "id_Boolean").type().booleanType().noDefault() //
                 .endRecord();
 
         IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
@@ -710,7 +712,7 @@ public class IncomingSchemaEnforcerTest {
                 .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'") //
                 .fields() //
-                .name("valid").type().booleanType().noDefault() //
+                .name("valid").prop("di.column.talendType", "id_Boolean").type().booleanType().noDefault() //
                 .endRecord();
 
         IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
@@ -736,7 +738,7 @@ public class IncomingSchemaEnforcerTest {
                 .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'") //
                 .fields() //
-                .name("valid").type().booleanType().noDefault() //
+                .name("valid").prop("di.column.talendType", "id_Boolean").type().booleanType().noDefault() //
                 .endRecord();
 
         IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
