@@ -384,6 +384,22 @@ public class JobSettingsManager {
         param.setShowIf(condition);
         paramList.add(param);
 
+        // begin Override encoding
+        param = new ElementParameter(process);
+        param.setName("Override encoding");
+
+        param.setDisplayName("Override encoding");
+        param.setFieldType(EParameterFieldType.CHECK);
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setGroup(IMPLICIT_GROUP);
+        param.setNumRow(33);
+        condition = JobSettingsConstants.addBrackets(CONTEXTLOAD_CONDITION) + " and " //$NON-NLS-1$
+                + JobSettingsConstants.addBrackets(
+                        JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG.getName()) + " == 'true'"); //$NON-NLS-1$
+
+        param.setShowIf(condition);
+        paramList.add(param);
+        // end Override encoding
         return paramList;
     }
 
