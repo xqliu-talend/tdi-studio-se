@@ -156,6 +156,22 @@ public class IncomingSchemaEnforcer {
      */
     public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
             boolean isNullable) {
+        addDynamicField(name, diType, logicalType, fieldPattern, description, null, isNullable);
+    }
+
+    /**
+     * Recreates dynamic field from parameters retrieved from DI dynamic metadata
+     *
+     * @param name dynamic field name
+     * @param diType di column type
+     * @param logicalType dynamic field logical type; could be null
+     * @param fieldPattern dynamic field date format
+     * @param description dynamic field description
+     * @parem dbType original database type used for this field on source database; may be null
+     * @param isNullable defines whether dynamic field may contain <code>null</code> value
+     */
+    public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
+            String dbType, boolean isNullable) {
         if (!needsInitDynamicColumns())
             return;
         Schema fieldSchema = diToAvro(diType, logicalType);
@@ -169,6 +185,9 @@ public class IncomingSchemaEnforcer {
             field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, fieldPattern);
         }
         field.addProp("di.column.talendType", diType);
+        if (dbType != null) {
+            field.addProp(SchemaConstants.TALEND_COLUMN_DB_TYPE, dbType);
+        }
         dynamicFields.add(field);
     }
 
