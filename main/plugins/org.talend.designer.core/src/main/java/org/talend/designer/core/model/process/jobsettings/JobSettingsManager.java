@@ -96,6 +96,12 @@ public class JobSettingsManager {
 
     private static final String CONNECTOR = TalendTextUtils.getStringConnect();
 
+    private static final String ENCODING_TYPE_UTF_8 = "UTF-8"; //$NON-NLS-1$
+
+    private static final String ENCODING_TYPE_ISO_8859_15 = "ISO-8859-15"; //$NON-NLS-1$
+
+    private static final String ENCODING_TYPE_CUSTOM = "CUSTOM"; //$NON-NLS-1$
+
     private static List<IElementParameter> getHeaderFooterParameters(IProcess process) {
         // for headerFooter Code
         ElementParameter param;
@@ -384,10 +390,9 @@ public class JobSettingsManager {
         param.setShowIf(condition);
         paramList.add(param);
 
-        // begin Override encoding
+        // begin Override encoding checkbox
         param = new ElementParameter(process);
         param.setName("Override encoding");
-
         param.setDisplayName("Override encoding");
         param.setFieldType(EParameterFieldType.CHECK);
         param.setCategory(EComponentCategory.EXTRA);
@@ -396,10 +401,39 @@ public class JobSettingsManager {
         condition = JobSettingsConstants.addBrackets(CONTEXTLOAD_CONDITION) + " and " //$NON-NLS-1$
                 + JobSettingsConstants.addBrackets(
                         JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG.getName()) + " == 'true'"); //$NON-NLS-1$
-
         param.setShowIf(condition);
         paramList.add(param);
-        // end Override encoding
+        // end Override encoding checkbox
+
+        // begin encoding select
+        ElementParameter encodingParam = new ElementParameter(process);
+        encodingParam.setName(EParameterName.ENCODING.getName());
+        encodingParam.setDisplayName(EParameterName.ENCODING.getDisplayName());
+        encodingParam.setCategory(EComponentCategory.EXTRA);
+        encodingParam.setGroup(IMPLICIT_GROUP);
+        encodingParam.setFieldType(EParameterFieldType.ENCODING_TYPE);
+        encodingParam.setShow(true);
+        encodingParam.setShowIf(condition); // $NON-NLS-1$
+        encodingParam.setValue(ENCODING_TYPE_ISO_8859_15);
+        encodingParam.setNumRow(34);
+        paramList.add(encodingParam);
+
+        ElementParameter childParam = new ElementParameter(process);
+        childParam.setName(EParameterName.ENCODING_TYPE.getName());
+        childParam.setDisplayName(EParameterName.ENCODING_TYPE.getDisplayName());
+        childParam.setFieldType(EParameterFieldType.TECHNICAL);
+        childParam.setCategory(EComponentCategory.EXTRA);
+        childParam.setGroup(IMPLICIT_GROUP);
+        childParam.setListItemsDisplayName(new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setListItemsDisplayCodeName(
+                new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setListItemsValue(new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childParam.setValue(ENCODING_TYPE_ISO_8859_15);
+        childParam.setNumRow(34);
+        childParam.setShow(true);
+        childParam.setShowIf("'true'=='true'"); // $NON-NLS-1$
+        childParam.setParentParameter(encodingParam);
+        // end encoding select
         return paramList;
     }
 
