@@ -392,27 +392,26 @@ public class JobSettingsManager {
 
         // begin Override encoding checkbox
         param = new ElementParameter(process);
-        param.setName("Override encoding");
-        param.setDisplayName("Override encoding");
+        param.setName(EParameterName.OVERRIDE_ENCODING_FLAG.getName());
+        param.setDisplayName(EParameterName.OVERRIDE_ENCODING_FLAG.getDisplayName());
         param.setFieldType(EParameterFieldType.CHECK);
         param.setCategory(EComponentCategory.EXTRA);
         param.setGroup(IMPLICIT_GROUP);
         param.setNumRow(33);
-        condition = JobSettingsConstants.addBrackets(CONTEXTLOAD_CONDITION) + " and " //$NON-NLS-1$
-                + JobSettingsConstants.addBrackets(
-                        JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG.getName()) + " == 'true'"); //$NON-NLS-1$
+        param.setValue(false);
         param.setShowIf(condition);
         paramList.add(param);
         // end Override encoding checkbox
 
         // begin encoding select
         ElementParameter encodingParam = new ElementParameter(process);
-        encodingParam.setName(EParameterName.ENCODING.getName());
-        encodingParam.setDisplayName(EParameterName.ENCODING.getDisplayName());
+        encodingParam.setName(EParameterName.EXTRA_ENCODING.getName());
+        encodingParam.setDisplayName(EParameterName.EXTRA_ENCODING.getDisplayName());
         encodingParam.setCategory(EComponentCategory.EXTRA);
         encodingParam.setGroup(IMPLICIT_GROUP);
         encodingParam.setFieldType(EParameterFieldType.ENCODING_TYPE);
-        encodingParam.setShow(true);
+        condition = JobSettingsConstants
+                .addBrackets(JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG.getName()) + " == 'true' and " +EParameterName.OVERRIDE_ENCODING_FLAG.getName()+" == 'true'");
         encodingParam.setShowIf(condition); // $NON-NLS-1$
         encodingParam.setValue(ENCODING_TYPE_ISO_8859_15);
         encodingParam.setNumRow(34);
@@ -431,7 +430,7 @@ public class JobSettingsManager {
         childParam.setValue(ENCODING_TYPE_ISO_8859_15);
         childParam.setNumRow(34);
         childParam.setShow(true);
-        childParam.setShowIf("'true'=='true'"); // $NON-NLS-1$
+        childParam.setShowIf(condition); // $NON-NLS-1$
         childParam.setParentParameter(encodingParam);
         // end encoding select
         return paramList;
@@ -1002,6 +1001,24 @@ public class JobSettingsManager {
             tContextLoadNode.getElementParameter(EParameterName.IMPLICIT_TCONTEXTLOAD_FILE.getName()).setValue(inputFile);
             String regex = FileSeparator.getSeparatorsRegexp(fileSparator);
             tContextLoadNode.getElementParameter(JobSettingsConstants.IMPLICIT_TCONTEXTLOAD_REGEX).setValue(regex);
+
+            String encoding = (String) process.getElementParameter(EParameterName.EXTRA_ENCODING.getName()).getValue();
+            if (StringUtils.isNotEmpty(encoding) && !encoding.startsWith(TalendTextUtils.getQuoteChar())) {
+                encoding = TalendTextUtils.addQuotes(encoding);
+            }
+
+            // override encoding
+            paramName = EParameterName.OVERRIDE_ENCODING_FLAG.getName();
+            boolean overrideFlag = ((Boolean) process.getElementParameter(paramName).getValue())
+                    && process.getElementParameter(paramName).isShow(process.getElementParameters());
+            if (overrideFlag) {
+                IElementParameter encodingParam = new ElementParameter(tContextLoadNode);
+                encodingParam.setName(EParameterName.EXTRA_ENCODING.getName());
+                encodingParam.setDisplayName(EParameterName.EXTRA_ENCODING.getDisplayName());
+                encodingParam.setFieldType(EParameterFieldType.ENCODING_TYPE);
+                encodingParam.setValue(encoding);
+                tContextLoadNode.addElementParameter(encodingParam);
+            }
         } else {
             // is db
             paramName = JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName());
