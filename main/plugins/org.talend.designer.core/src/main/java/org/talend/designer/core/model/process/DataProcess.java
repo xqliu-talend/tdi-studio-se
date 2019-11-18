@@ -931,6 +931,7 @@ public class DataProcess implements IGeneratingProcess {
                 metaList.add(metaTable);
                 curNode.setMetadataList(metaList);
             }
+
             updateVirtualComponentProperties(graphicalNode.getComponentProperties(), curItem, curNode);
 
             curNode.setActivate(graphicalNode.isActivate());
