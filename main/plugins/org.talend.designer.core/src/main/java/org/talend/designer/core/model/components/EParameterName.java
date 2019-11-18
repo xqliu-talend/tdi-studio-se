@@ -228,7 +228,7 @@ public enum EParameterName {
     FROM_FILE_FLAG(Messages.getString("EParameterName.fromFileFlag")), //$NON-NLS-1$
     OVERRIDE_ENCODING_FLAG(Messages.getString("EParameterName.OverrideEncodingFlag")), //$NON-NLS-1$
     // for override encoding (name should be diff from the encoding of Stats&Logs)
-    EXTRA_ENCODING("EXTRA_ENCODING"), //$NON-NLS-1$
+    OVERRIDE_ENCODING_IN_EXTRA("OVERRIDE_ENCODING_IN_EXTRA"), //$NON-NLS-1$
     FROM_DATABASE_FLAG(Messages.getString("EParameterName.fromDatabaseFlag")), //$NON-NLS-1$
     // implict tConextLoad parameters.
     LOAD_NEW_VARIABLE(Messages.getString("EParameterName.LoadNewVariableLabel")), //$NON-NLS-1$

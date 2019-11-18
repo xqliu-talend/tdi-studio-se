@@ -931,14 +931,6 @@ public class DataProcess implements IGeneratingProcess {
                 metaList.add(metaTable);
                 curNode.setMetadataList(metaList);
             }
-            String paramName = EParameterName.OVERRIDE_ENCODING_FLAG.getName();
-            boolean overrideFlag = ((Boolean) process.getElementParameter(paramName).getValue())
-                    && process.getElementParameter(paramName).isShow(process.getElementParameters());
-            if ("tFileInputRegex".equals(curNode.getComponentName()) && overrideFlag) {
-                String encoding = String
-                        .valueOf(graphicalNode.getElementParameter(EParameterName.EXTRA_ENCODING.getName()).getValue());
-                curNode.getElementParameter(EParameterName.ENCODING.getName()).setValue(encoding);
-            }
             updateVirtualComponentProperties(graphicalNode.getComponentProperties(), curItem, curNode);
 
             curNode.setActivate(graphicalNode.isActivate());

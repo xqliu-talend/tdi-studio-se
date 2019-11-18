@@ -405,13 +405,15 @@ public class JobSettingsManager {
 
         // begin encoding select
         ElementParameter encodingParam = new ElementParameter(process);
-        encodingParam.setName(EParameterName.EXTRA_ENCODING.getName());
-        encodingParam.setDisplayName(EParameterName.EXTRA_ENCODING.getDisplayName());
+        encodingParam.setName(EParameterName.OVERRIDE_ENCODING_IN_EXTRA.getName());
+        encodingParam.setDisplayName(EParameterName.OVERRIDE_ENCODING_IN_EXTRA.getDisplayName());
         encodingParam.setCategory(EComponentCategory.EXTRA);
         encodingParam.setGroup(IMPLICIT_GROUP);
         encodingParam.setFieldType(EParameterFieldType.ENCODING_TYPE);
-        condition = JobSettingsConstants
-                .addBrackets(JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG.getName()) + " == 'true' and " +EParameterName.OVERRIDE_ENCODING_FLAG.getName()+" == 'true'");
+        StringBuilder sb = new StringBuilder();
+        sb.append(JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG.getName())).append(" == 'true' and ")
+                .append(EParameterName.OVERRIDE_ENCODING_FLAG.getName()).append(" == 'true' and ").append(CONTEXTLOAD_CONDITION);
+        condition = JobSettingsConstants.addBrackets(sb.toString());
         encodingParam.setShowIf(condition); // $NON-NLS-1$
         encodingParam.setValue(ENCODING_TYPE_ISO_8859_15);
         encodingParam.setNumRow(34);
@@ -1002,7 +1004,8 @@ public class JobSettingsManager {
             String regex = FileSeparator.getSeparatorsRegexp(fileSparator);
             tContextLoadNode.getElementParameter(JobSettingsConstants.IMPLICIT_TCONTEXTLOAD_REGEX).setValue(regex);
 
-            String encoding = (String) process.getElementParameter(EParameterName.EXTRA_ENCODING.getName()).getValue();
+            String encoding = (String) process.getElementParameter(EParameterName.OVERRIDE_ENCODING_IN_EXTRA.getName())
+                    .getValue();
             if (StringUtils.isNotEmpty(encoding) && !encoding.startsWith(TalendTextUtils.getQuoteChar())) {
                 encoding = TalendTextUtils.addQuotes(encoding);
             }
@@ -1013,8 +1016,8 @@ public class JobSettingsManager {
                     && process.getElementParameter(paramName).isShow(process.getElementParameters());
             if (overrideFlag) {
                 IElementParameter encodingParam = new ElementParameter(tContextLoadNode);
-                encodingParam.setName(EParameterName.EXTRA_ENCODING.getName());
-                encodingParam.setDisplayName(EParameterName.EXTRA_ENCODING.getDisplayName());
+                encodingParam.setName(EParameterName.ENCODING.getName());
+                encodingParam.setDisplayName(EParameterName.ENCODING.getDisplayName());
                 encodingParam.setFieldType(EParameterFieldType.ENCODING_TYPE);
                 encodingParam.setValue(encoding);
                 tContextLoadNode.addElementParameter(encodingParam);
