@@ -13,12 +13,18 @@
 package org.talend.designer.core.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.core.model.components.ComponentUtilities;
+import org.talend.core.model.components.ModifyComponentsAction;
+import org.talend.core.model.components.conversions.IComponentConversion;
+import org.talend.core.model.components.filters.IComponentFilter;
+import org.talend.core.model.components.filters.NameComponentFilter;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
@@ -30,7 +36,6 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
@@ -48,70 +53,45 @@ public class FillTRunJobReferenceParametersMigrationTask extends AbstractItemMig
 
     @Override
     public final ExecutionResult execute(Item item) {
-        final IProxyRepositoryFactory factory = RepositoryPlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
-        boolean modified = false;
+        ProcessType pt = null;
+        if (item instanceof ProcessItem) {
+            ProcessItem processItem = (ProcessItem) item;
+            pt = processItem.getProcess();
+        } else if (item instanceof JobletProcessItem) {
+            JobletProcessItem jobletItem = (JobletProcessItem) item;
+            pt = jobletItem.getJobletProcess();
+        }
+
+        if (pt == null) {
+            return ExecutionResult.NOTHING_TO_DO;
+        }
+
+        IComponentFilter filter = new NameComponentFilter("tRunJob"); //$NON-NLS-1$
         try {
-            if (item instanceof ProcessItem) {
-                ProcessItem processItem = (ProcessItem) item;
-                modified = updateTRunJobNodes(processItem.getProcess());
-            } else if (item instanceof JobletProcessItem) {
-                JobletProcessItem jobletItem = (JobletProcessItem) item;
-                modified = updateTRunJobNodes(jobletItem.getJobletProcess());
-            }
-        } catch (Exception ex) {
-            ExceptionHandler.process(ex);
+            ModifyComponentsAction.searchAndModify(item, pt, filter,
+                    Arrays.<IComponentConversion> asList(new IComponentConversion() {
+
+                        @Override
+                        public void transform(NodeType node) {
+                            ElementParameterType jobId = ComponentUtilities.getNodeProperty(node,
+                                    EParameterName.PROCESS.getName() + ":" + EParameterName.PROCESS_TYPE_PROCESS.getName()); //$NON-NLS-1$
+                            if (jobId.getValue() == null || jobId.getValue().isEmpty()) {
+                                ElementParameterType jobLabel = ComponentUtilities.getNodeProperty(node,
+                                        EParameterName.PROCESS.getName()); // $NON-NLS-1$
+                                String id = getIdFormLabel(jobLabel.getValue());
+                                if (id != null && !id.isEmpty()) {
+                                    jobId.setValue(id);
+                                }
+                            }
+                        }
+
+                    }));
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
             return ExecutionResult.FAILURE;
         }
 
-        if (modified) {
-            try {
-                factory.save(item, true);
-                return ExecutionResult.SUCCESS_NO_ALERT;
-            } catch (Exception ex) {
-                ExceptionHandler.process(ex);
-                return ExecutionResult.FAILURE;
-            }
-        }
-        return ExecutionResult.NOTHING_TO_DO;
-    }
-
-    protected boolean updateTRunJobNodes(ProcessType processType) throws Exception {
-        boolean modified = false;
-        for (Object nodeObject : processType.getNode()) {
-            NodeType nodeType = (NodeType) nodeObject;
-            if (DesignerUtilities.isTRunJobComponent(nodeType)) {
-                for (Object paramObjectType : nodeType.getElementParameter()) {
-                    ElementParameterType param = (ElementParameterType) paramObjectType;
-                    if (param.getName()
-                            .equals(EParameterName.PROCESS.getName() + ":" + EParameterName.PROCESS_TYPE_PROCESS.getName())
-                            && param.getValue().isEmpty()) {
-                        String label = getTRunJobProcessLabel(nodeType);
-                        String id = getIdFormLabel(label);
-                        if (id != null) {
-                            param.setValue(id);
-                            modified = true;
-                        }
-                        // need to break anyway
-                        break;
-                    }
-                }
-            }
-        }
-        return modified;
-    }
-
-    private String getTRunJobProcessLabel(NodeType nodeType) {
-        if (nodeType == null || nodeType.getElementParameter() == null) {
-            return null;
-        }
-        for (Object paramObjectType : nodeType.getElementParameter()) {
-            ElementParameterType param = (ElementParameterType) paramObjectType;
-            if (param.getName().equals(EParameterName.PROCESS.getName()) && !param.getValue().isEmpty()) {
-                return param.getValue();
-            }
-        }
-
-        return null;
+        return ExecutionResult.SUCCESS_NO_ALERT;
     }
 
     private static String getIdFormLabel(final String label) {
