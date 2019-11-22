@@ -26,6 +26,7 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.designer.core.DesignerPlugin;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
@@ -33,9 +34,7 @@ import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
- * ggu class global comment. Detailled comment
- *
- * feature 3310
+ * Created by bhe on Nov 22, 2019
  */
 public class FillTRunJobReferenceParametersMigrationTask extends AbstractItemMigrationTask {
 
@@ -47,7 +46,6 @@ public class FillTRunJobReferenceParametersMigrationTask extends AbstractItemMig
         return toReturn;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public final ExecutionResult execute(Item item) {
         final IProxyRepositoryFactory factory = RepositoryPlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
@@ -81,10 +79,12 @@ public class FillTRunJobReferenceParametersMigrationTask extends AbstractItemMig
         boolean modified = false;
         for (Object nodeObject : processType.getNode()) {
             NodeType nodeType = (NodeType) nodeObject;
-            if (nodeType.getComponentName().equals("tRunJob")) {
+            if (DesignerUtilities.isTRunJobComponent(nodeType)) {
                 for (Object paramObjectType : nodeType.getElementParameter()) {
                     ElementParameterType param = (ElementParameterType) paramObjectType;
-                    if (param.getName().equals("PROCESS:PROCESS_TYPE_PROCESS") && param.getValue().isEmpty()) {
+                    if (param.getName()
+                            .equals(EParameterName.PROCESS.getName() + ":" + EParameterName.PROCESS_TYPE_PROCESS.getName())
+                            && param.getValue().isEmpty()) {
                         String label = getTRunJobProcessLabel(nodeType);
                         String id = getIdFormLabel(label);
                         if (id != null) {
@@ -106,7 +106,7 @@ public class FillTRunJobReferenceParametersMigrationTask extends AbstractItemMig
         }
         for (Object paramObjectType : nodeType.getElementParameter()) {
             ElementParameterType param = (ElementParameterType) paramObjectType;
-            if (param.getName().equals("PROCESS") && !param.getValue().isEmpty()) {
+            if (param.getName().equals(EParameterName.PROCESS.getName()) && !param.getValue().isEmpty()) {
                 return param.getValue();
             }
         }
