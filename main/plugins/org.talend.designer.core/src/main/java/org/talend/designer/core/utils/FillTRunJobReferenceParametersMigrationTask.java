@@ -46,8 +46,8 @@ public class FillTRunJobReferenceParametersMigrationTask extends AbstractItemMig
     @Override
     public List<ERepositoryObjectType> getTypes() {
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
-        toReturn.add(ERepositoryObjectType.PROCESS);
-        toReturn.add(ERepositoryObjectType.JOBLET);
+        toReturn.addAll(ERepositoryObjectType.getAllTypesOfProcess());
+        toReturn.addAll(ERepositoryObjectType.getAllTypesOfProcess2());
         return toReturn;
     }
 
