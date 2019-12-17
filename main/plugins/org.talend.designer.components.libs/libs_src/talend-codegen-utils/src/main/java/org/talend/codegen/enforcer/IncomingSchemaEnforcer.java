@@ -38,6 +38,8 @@ import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.LogicalTypeUtils;
 import org.talend.daikon.avro.SchemaConstants;
 
+import static org.talend.codegen.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
+
 /**
  * <b>You should almost certainly not be using this class.</b>
  *
@@ -184,7 +186,7 @@ public class IncomingSchemaEnforcer {
         if ("id_Date".equals(diType) && fieldPattern != null) {
             field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, fieldPattern);
         }
-        field.addProp("di.column.talendType", diType);
+        field.addProp(TALEND6_COLUMN_TALEND_TYPE, diType);
         if (dbType != null) {
             field.addProp(SchemaConstants.TALEND_COLUMN_DB_TYPE, dbType);
         }
@@ -424,7 +426,7 @@ public class IncomingSchemaEnforcer {
         Object avroValue = null;
 
         // TODO(rskraba): This is pretty rough -- fix with a general type conversion strategy.
-        String talendType = field.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
+        String talendType = field.getProp(TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = fieldSchema.getProp(SchemaConstants.JAVA_CLASS_FLAG);
 
         // TODO(igonchar): This is wrong. However I left it as is. We have to fix it after release
