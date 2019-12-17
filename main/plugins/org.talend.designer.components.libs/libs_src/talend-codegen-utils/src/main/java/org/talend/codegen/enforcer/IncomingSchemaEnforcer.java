@@ -63,11 +63,6 @@ public class IncomingSchemaEnforcer {
     private static final int NO_DYNAMIC_COLUMN = -1;
 
     /**
-     * The number of milliseconds in one day
-     */
-    private static final long ONE_DAY = 1000 * 60 * 60 * 24;
-
-    /**
      * The design-time schema from the Studio that determines how incoming java column data will be interpreted.
      * This schema is retrieved from downstream component's properties
      */
