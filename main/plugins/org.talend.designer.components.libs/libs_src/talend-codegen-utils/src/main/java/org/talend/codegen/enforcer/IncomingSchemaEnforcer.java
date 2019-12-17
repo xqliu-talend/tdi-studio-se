@@ -164,7 +164,7 @@ public class IncomingSchemaEnforcer {
      * @param logicalType dynamic field logical type; could be null
      * @param fieldPattern dynamic field date format
      * @param description dynamic field description
-     * @parem dbType original database type used for this field on source database; may be null
+     * @param dbType original database type used for this field in source data storage; may be null
      * @param isNullable defines whether dynamic field may contain <code>null</code> value
      */
     public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
