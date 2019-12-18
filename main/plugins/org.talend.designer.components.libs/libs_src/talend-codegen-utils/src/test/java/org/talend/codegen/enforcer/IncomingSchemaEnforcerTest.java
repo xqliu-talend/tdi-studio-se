@@ -23,11 +23,14 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.talend.codegen.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
+import static org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_DB_TYPE;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
@@ -701,6 +704,38 @@ public class IncomingSchemaEnforcerTest {
         IndexedRecord record = enforcer.createIndexedRecord();
         assertThat(record.get(0), is((Object) new BigDecimal("630.1020")));
         assertThat(record.get(1), is((Object) new Date(1234567891011L)));
+    }
+
+    /**
+     * Checks {@link IncomingSchemaEnforcer#addDynamicField(String, String, String, String, String, String, boolean)}
+     * adds information about original type used in source database to runtime schema
+     */
+    @Test
+    public void testAddDynamicFieldDbTypePresent() {
+        List<Schema.Field> fields = new ArrayList<>();
+        Schema.Field field1 = new Schema.Field("StringField", Schema.create(Schema.Type.STRING), null, (Object) null);
+        field1.addProp(TALEND6_COLUMN_TALEND_TYPE, "id_String");
+        field1.addProp(TALEND_COLUMN_DB_TYPE, "TEXT");
+        fields.add(field1);
+        Schema.Field field2 = new Schema.Field("IntField", Schema.create(Schema.Type.INT), null, (Object) null);
+        field2.addProp(TALEND6_COLUMN_TALEND_TYPE, "id_Integer");
+        field2.addProp(TALEND_COLUMN_DB_TYPE, "INT32");
+        fields.add(field2);
+
+        Schema expectedRuntimeSchema = Schema.createRecord("Record", null, null, false, fields);
+
+        Schema designSchema = SchemaBuilder.builder().record("Record").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true")
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0")
+                .fields()
+                .endRecord();
+
+        IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
+        enforcer.addDynamicField("StringField", "id_String", null, null, null, "TEXT", false);
+        enforcer.addDynamicField("IntField", "id_Integer", null, null, null, "INT32", false);
+        enforcer.createRuntimeSchema();
+
+        Schema actualRuntimeSchema = enforcer.getRuntimeSchema();
+        assertEquals(expectedRuntimeSchema, actualRuntimeSchema);
     }
 
     /**
