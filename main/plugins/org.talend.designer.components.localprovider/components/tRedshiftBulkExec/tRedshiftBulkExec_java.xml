@@ -70,13 +70,13 @@
 
 		<PARAMETER NAME="USER" FIELD="TEXT" NUM_ROW="5"
 			REPOSITORY_VALUE="USERNAME" REQUIRED="true"
-			SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (JDBC_URL=='STANDARD')" GROUP="DB_CONFIG">
+			SHOW_IF="(USE_EXISTING_CONNECTION == 'false') " GROUP="DB_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
 		<PARAMETER NAME="PASS" FIELD="PASSWORD" NUM_ROW="5"
 			REPOSITORY_VALUE="PASSWORD" REQUIRED="true"
-			SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (JDBC_URL=='STANDARD')" GROUP="DB_CONFIG">
+			SHOW_IF="(USE_EXISTING_CONNECTION == 'false') " GROUP="DB_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 		
@@ -141,13 +141,24 @@
 		<PARAMETER NAME="CONNECTION_S3" FIELD="COMPONENT_LIST" REQUIRED="true" FILTER="tS3Connection"
         	NUM_ROW="46" SHOW_IF="(USE_EXISTING_CONNECTION_S3 == 'true') AND (DATA_SOURCE_TYPE == 'S3') AND (ASSUME_ROLE == 'false')" GROUP="S3_CONFIG"/>
 		
+		<PARAMETER
+	      NAME="INHERIT_CREDENTIALS"
+	      FIELD="CHECK"
+	      NUM_ROW="55"
+	      REQUIRED="true"
+	      GROUP="S3_CONFIG"
+	      SHOW="false"
+	    >
+	      <DEFAULT>false</DEFAULT>
+	    </PARAMETER>
+		
 		<PARAMETER NAME="ACCESS_KEY" FIELD="TEXT" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG" SHOW_IF="(USE_EXISTING_CONNECTION_S3 == 'false') AND (DATA_SOURCE_TYPE == 'S3') AND (ASSUME_ROLE == 'false')">
+			REQUIRED="true" GROUP="S3_CONFIG" SHOW_IF="(USE_EXISTING_CONNECTION_S3 == 'false') AND (DATA_SOURCE_TYPE == 'S3') AND (ASSUME_ROLE == 'false') AND (INHERIT_CREDENTIALS == 'false')">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
 		<PARAMETER NAME="SECRET_KEY" FIELD="PASSWORD" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG" SHOW_IF="(USE_EXISTING_CONNECTION_S3 == 'false') AND (DATA_SOURCE_TYPE == 'S3') AND (ASSUME_ROLE == 'false')">
+			REQUIRED="true" GROUP="S3_CONFIG" SHOW_IF="(USE_EXISTING_CONNECTION_S3 == 'false') AND (DATA_SOURCE_TYPE == 'S3') AND (ASSUME_ROLE == 'false') AND (INHERIT_CREDENTIALS == 'false')">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 		
@@ -407,14 +418,14 @@
 			<IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
 				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406" 
 				REQUIRED_IF="(JDBC_URL == 'SSO') AND (USE_EXISTING_CONNECTION == 'false')" />
-			<IMPORT NAME="jackson-core-2.9.9.jar" MODULE="jackson-core-2.9.9.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.9"
+			<IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1"
 				REQUIRED_IF="(JDBC_URL == 'SSO') AND (USE_EXISTING_CONNECTION == 'false')" />
-			<IMPORT NAME="jackson-databind-2.9.9.jar" MODULE="jackson-databind-2.9.9.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.9"
+			<IMPORT NAME="jackson-databind-2.10.1.jar" MODULE="jackson-databind-2.10.1.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.10.1"
 				REQUIRED_IF="(JDBC_URL == 'SSO') AND (USE_EXISTING_CONNECTION == 'false')" />
-			<IMPORT NAME="jackson-annotations-2.9.0.jar" MODULE="jackson-annotations-2.9.0.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0"
+			<IMPORT NAME="jackson-annotations-2.10.1.jar" MODULE="jackson-annotations-2.10.1.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.10.1"
 				REQUIRED_IF="(JDBC_URL == 'SSO') AND (USE_EXISTING_CONNECTION == 'false')" />
 			<IMPORT NAME="httpcore-4.4.9.jar" MODULE="httpcore-4.4.9.jar"
 				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9"

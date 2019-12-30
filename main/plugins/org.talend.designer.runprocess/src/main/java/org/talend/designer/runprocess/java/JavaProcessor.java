@@ -105,7 +105,6 @@ import org.talend.core.context.RepositoryContext;
 import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.general.ModuleNeeded;
-import org.talend.core.model.process.ElementParameterParser;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -144,6 +143,7 @@ import org.talend.designer.core.utils.BigDataJobUtil;
 import org.talend.designer.maven.utils.ClasspathsJarGenerator;
 import org.talend.designer.maven.utils.MavenVersionHelper;
 import org.talend.designer.maven.utils.PomUtil;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.designer.runprocess.ProcessorConstants;
 import org.talend.designer.runprocess.ProcessorException;
@@ -155,8 +155,10 @@ import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.constants.BuildJobConstants;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
+import org.talend.utils.StudioKeysFileCheck;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -247,6 +249,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             } else {
                 // for shadow process/data preview
                 this.talendJavaProject = TalendJavaProjectManager.getTempJavaProject();
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                    IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
+                            .getService(IRunProcessService.class);
+                    if (service != null) {
+                        service.updateLogFiles(talendJavaProject, true);
+                    }
+                }
             }
             Assert.isNotNull(this.talendJavaProject, Messages.getString("JavaProcessor.notFoundedProjectException"));
             this.project = this.talendJavaProject.getProject();
@@ -375,15 +384,22 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 needContextInJar = new BigDataJobUtil(process).needsToHaveContextInsideJar();
                 if (ProcessorUtilities.getMainJobInfo() != null) {
                     if (ProcessorUtilities.getMainJobInfo().getProcess() != null) {
-                        if (ProcessorUtilities.isEsbJob(ProcessorUtilities.getMainJobInfo().getProcess())
+                        if (ProcessorUtilities.isEsbJob(ProcessorUtilities.getMainJobInfo().getProcess(), true)
                                 || "CAMEL".equals(ProcessorUtilities.getMainJobInfo().getProcess().getComponentsType())) {
                             if (property.getItem() instanceof ProcessItem) {
-                                if (null != EmfModelUtils.getComponentByName((ProcessItem) property.getItem(), "tRunJob","cTalendJob")) {
-                                    needContextInJar = false;
-                                } else {
-                                    needContextInJar = true;
+                                if (!needContextInJar) {
+                                    if (null != EmfModelUtils.getComponentByName((ProcessItem) property.getItem(), "tRunJob", "cTalendJob")) {
+                                        needContextInJar = false;
+                                    } else {
+                                        if (ProcessorUtilities.isEsbJob(process, true)) {
+                                            needContextInJar = false;
+                                        } else {
+                                            needContextInJar = true;
+                                        }
+                                    }
                                 }
-                            } else {
+                            } else if (property.getItem().eClass().getClassifierID() == 4) {
+                                // CamelPropertiesPackage Line 516 int ROUTELET_PROCESS_ITEM = 4;
                                 needContextInJar = true;
                             }
                         }
@@ -1290,6 +1306,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 throw new ProcessorException(e);
             }
         }
+
         useRelativeClasspath = false;
         return libsStr;
     }
@@ -1452,8 +1469,22 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         if (isExportConfig() || isSkipClasspathJar()) {
             option = option | TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED;
         }
-        Set<ModuleNeeded> neededModules = getNeededModules(option);
-        JavaProcessorUtilities.checkJavaProjectLib(neededModules);
+        Set<ModuleNeeded> neededModulesLogjarUnsorted = LastGenerationInfo.getInstance()
+                .getModulesNeededWithSubjobPerJob(process.getId(), process.getVersion());
+        if (neededModulesLogjarUnsorted.isEmpty()) {
+            neededModulesLogjarUnsorted = getNeededModules(option);
+        }
+        JavaProcessorUtilities.checkJavaProjectLib(neededModulesLogjarUnsorted);
+
+        Set<ModuleNeeded> highPriorityModuleNeeded = LastGenerationInfo.getInstance().getHighPriorityModuleNeeded(process.getId(),
+                process.getVersion());
+
+
+        List<ModuleNeeded> neededModules = new ArrayList<ModuleNeeded>();
+
+        neededModules.addAll(neededModulesLogjarUnsorted);
+
+        UpdateLog4jJarUtils.sortClassPath4Log4j(highPriorityModuleNeeded, neededModules);
 
         // Ignore hadoop confs jars in lib path.
         if (ProcessorUtilities.hadoopConfJarCanBeLoadedDynamically(property)) {
@@ -1570,19 +1601,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     @Override
     public Set<ModuleNeeded> getNeededModules(int options) {
         Set<ModuleNeeded> neededLibraries = JavaProcessorUtilities.getNeededModulesForProcess(process, options);
-        boolean isLog4jEnabled = Boolean.parseBoolean(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__")); //$NON-NLS-1$
-        if (isLog4jEnabled) {
-            JavaProcessorUtilities.addLog4jToModuleList(neededLibraries);
-        }
+
         return neededLibraries;
     }
 
     @Override
     public void updateModulesAfterSetLog4j(Collection<ModuleNeeded> modulesNeeded) {
-        boolean isLog4jEnabled = Boolean.parseBoolean(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__")); //$NON-NLS-1$
-        if (isLog4jEnabled) {
-            JavaProcessorUtilities.addLog4jToModuleList(modulesNeeded);
-        }
+
     }
 
     protected String[] getAdditionCommandStrings() {
@@ -1752,6 +1777,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, this.getMainClass());
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, CTX_ARG + context.getName());
+            setupEncryptionFilePathParameter(wc);
             config = wc.doSave();
         }
         return config;
@@ -1778,9 +1804,26 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, this.getMainClass());
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, CTX_ARG + context.getName() + parameterStr);
+            setupEncryptionFilePathParameter(wc);
             config = wc.doSave();
         }
         return config;
+    }
+
+    private void setupEncryptionFilePathParameter(ILaunchConfigurationWorkingCopy wc) throws CoreException {
+        StringBuilder vmArguments = new StringBuilder();
+        vmArguments.append(wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""));
+        if (vmArguments.indexOf(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM) < 0) {
+            if (vmArguments.length() > 0) {
+                vmArguments.append(" ");
+            }
+            String encryptionFilePath = System.getProperty(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_SYS_PROP);
+            File encryptionFile = new File(encryptionFilePath);
+            if (encryptionFile.exists()) {
+                vmArguments.append(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM + "=" + encryptionFile.toURI().getPath());
+            }
+            wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments.toString());
+        }
     }
 
     /*
@@ -1964,6 +2007,48 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             if (oidcEnabled) {
                 copyEsbConfigFile(esbConfigsSourceFolder, esbConfigsTargetFolder, "oidc.properties"); //$NON-NLS-1$
             }
+        }
+
+        try {
+
+            ITalendProcessJavaProject tProcessJvaProject = this.getTalendJavaProject();
+            if (tProcessJvaProject == null) {
+                return;
+            }
+            Item item = property.getItem();
+            IFolder externalResourcesFolder = tProcessJvaProject.getExternalResourcesFolder();
+            IFolder resourcesFolder = tProcessJvaProject.getResourcesFolder();
+            String jobClassPackageFolder = JavaResourcesHelper.getJobClassPackageFolder(item, false);
+            IPath jobContextFolderPath = new Path(jobClassPackageFolder).append(JavaUtils.JAVA_CONTEXTS_DIRECTORY);
+
+            IFolder extResourcePath = externalResourcesFolder.getFolder(jobContextFolderPath);
+            IFolder resourcesPath = resourcesFolder.getFolder(jobContextFolderPath);
+            
+            if (!extResourcePath.exists()) {
+                tProcessJvaProject.createSubFolder(null, externalResourcesFolder, jobContextFolderPath.toString());
+            }
+
+            extResourcePath.refreshLocal(IResource.DEPTH_INFINITE, null);
+
+            if(!resourcesPath.exists()) {
+                tProcessJvaProject.createSubFolder(null, resourcesFolder, jobContextFolderPath.toString());
+            }
+
+            resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
+
+            for (IResource resource : extResourcePath.members()) {
+                IFile context = resourcesPath.getFile(resource.getName());
+
+                if (context.exists()) {
+                    context.delete(true, null);
+                }
+                resource.copy(context.getFullPath(), true, null);
+            }
+
+            resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

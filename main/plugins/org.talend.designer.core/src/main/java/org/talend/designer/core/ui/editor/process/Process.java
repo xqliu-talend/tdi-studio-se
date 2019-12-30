@@ -126,6 +126,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.XmiResourceManager;
+import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.repository.item.ItemProductKeys;
 import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.service.IScdComponentService;
@@ -1304,8 +1305,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             }
         }
         if (generic) {
-            for (int j = 0; j < listParamType.size(); j++) {
-                pType = (ElementParameterType) listParamType.get(j);
+            for (Object element : listParamType) {
+                pType = (ElementParameterType) element;
                 if (pType != null) {
                     if ("PROPERTIES".equals(pType.getName())) {//$NON-NLS-1$
                         String pTypeValue = pType.getValue();
@@ -1357,8 +1358,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         } else {
             String tempLabel = null;
             String tempParaName = null;
-            for (int j = 0; j < listParamType.size(); j++) {
-                pType = (ElementParameterType) listParamType.get(j);
+            for (Object element : listParamType) {
+                pType = (ElementParameterType) element;
                 if (pType != null) {
                     IElementParameter param = null;
                     if (EParameterFieldType.SURVIVOR_RELATION.name().equals(pType.getField())) {
@@ -1780,8 +1781,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         saveElementParameters(fileFact, paramList, listParamType, process);
         listMetaType = nType.getMetadata();
         listMetaData = node.getMetadataList();
-        for (int j = 0; j < listMetaData.size(); j++) {
-            metaData = listMetaData.get(j);
+        for (IMetadataTable element : listMetaData) {
+            metaData = element;
             factory.setMetadataTable(metaData);
             listMetaType.add(factory.getMetadataType());
         }
@@ -1793,8 +1794,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 connList.add((Connection) connection);
             }
         }
-        for (int j = 0; j < connList.size(); j++) {
-            connec = connList.get(j);
+        for (Connection element : connList) {
+            connec = element;
             cType = fileFact.createConnectionType();
             cType.setSource(node.getUniqueName());
             INode jTarget = connec.getTarget();
@@ -2045,7 +2046,23 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             process.setParameters(parameterType);
         }
         checkRoutineDependencies();
-        process.getParameters().getRoutinesParameter().addAll(routinesDependencies);
+        List<RoutinesParameterType> toAddList = new ArrayList<RoutinesParameterType>();
+        boolean found = false;
+        for (RoutinesParameterType routineType : routinesDependencies) {
+            found = false;
+            for (Object o : process.getParameters().getRoutinesParameter()) {
+                RoutinesParameterType type = (RoutinesParameterType) o;
+                if (StringUtils.equals(type.getId(), routineType.getId())
+                        || StringUtils.equals(type.getName(), routineType.getName())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                toAddList.add(EcoreUtil.copy(routineType));
+            }
+        }
+        process.getParameters().getRoutinesParameter().addAll(toAddList);
     }
 
     public void addGeneratingRoutines(List<RoutinesParameterType> routinesParameters) {
@@ -2309,8 +2326,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         EList listParamType;
         boolean isCurrentProject = ProjectManager.getInstance().isInCurrentMainProject(this.getProperty());
         unloadedNode = new ArrayList<NodeType>();
-        for (int i = 0; i < nodeList.size(); i++) {
-            nType = (NodeType) nodeList.get(i);
+        for (Object element : nodeList) {
+            nType = (NodeType) element;
             listParamType = nType.getElementParameter();
             String componentName = nType.getComponentName();
             IComponent component = ComponentsFactoryProvider.getInstance().get(componentName, componentsType);
@@ -2324,8 +2341,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                                 .getProject(this.getProperty())));
                     }
                     if (component != null) {
-                        for (int j = 0; j < listParamType.size(); j++) {
-                            ElementParameterType pType = (ElementParameterType) listParamType.get(j);
+                        for (Object element2 : listParamType) {
+                            ElementParameterType pType = (ElementParameterType) element2;
                             if (EParameterName.PROCESS_TYPE_VERSION.name().equals(pType.getName())) {
                                 String jobletVersion = pType.getValue();
                                 if (!RelationshipItemBuilder.LATEST_VERSION.equals(jobletVersion)) {
@@ -2355,6 +2372,17 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 unloadedNode.add(nType);
                 continue;
             }
+            if (EComponentType.GENERIC.equals(component.getComponentType())) {
+                if (component instanceof AbstractBasicComponent) {
+                    AbstractBasicComponent abbComponent = (AbstractBasicComponent) component;
+                    boolean needMigration = component.getVersion() != null
+                            && !component.getVersion().equals(nType.getComponentVersion());
+                    if (!needMigration) {
+                        needMigration = JavaProcessUtil.needMigration(component.getName(), nType.getElementParameter());
+                    }
+                    abbComponent.setNeedMigration(needMigration);
+                }
+            }
             nc = loadNode(nType, component, nodesHashtable, listParamType);
 
         }
@@ -2383,8 +2411,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         }
 
         if (!unloadedNode.isEmpty()) {
-            for (int i = 0; i < unloadedNode.size(); i++) {
-                createDummyNode(unloadedNode.get(i), nodesHashtable);
+            for (NodeType element : unloadedNode) {
+                createDummyNode(element, nodesHashtable);
             }
         }
     }
@@ -2560,8 +2588,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 parameter.setListItemsDisplayCodeName(listItemsDisplayCodeValue);
                 parameter.setListItemsValue(listItemsValue);
 
-                for (int j = 0; j < listParamType.size(); j++) {
-                    ElementParameterType pType = (ElementParameterType) listParamType.get(j);
+                for (Object element : listParamType) {
+                    ElementParameterType pType = (ElementParameterType) element;
                     if (pType != null) {
                         if (parameter.getName().equals(pType.getName())) {
                             List<Map<String, Object>> tableValues = new ArrayList<Map<String, Object>>();
@@ -2677,8 +2705,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         // bug 6086
         Set<String> listNames = new HashSet<String>();
 
-        for (int j = 0; j < listMetaType.size(); j++) {
-            mType = (MetadataType) listMetaType.get(j);
+        for (Object element : listMetaType) {
+            mType = (MetadataType) element;
             setMetadatableToFactory(mType, factory);
             metadataTable = factory.getMetadataTable();
             // add by wzhang
@@ -2787,8 +2815,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
         Hashtable<ConnectionType, Connection> connectionsHashtable = new Hashtable<ConnectionType, Connection>();
         List<String> connectionUniqueNames = new ArrayList<String>();
-        for (int i = 0; i < connecList.size(); i++) {
-            cType = (ConnectionType) connecList.get(i);
+        for (Object element : connecList) {
+            cType = (ConnectionType) element;
             source = nodesHashtable.get(cType.getSource());
             target = nodesHashtable.get(cType.getTarget());
             // see the feature 6294
@@ -2922,8 +2950,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
         for (INode node : nodes) {
             if (node.getComponent().useMerge()) {
-                for (int i = 0; i < connecList.size(); i++) {
-                    cType = (ConnectionType) connecList.get(i);
+                for (Object element : connecList) {
+                    cType = (ConnectionType) element;
                     if (cType.getTarget().equals(node.getUniqueName())) {
                         if (cType.isSetMergeOrder() && connectionsHashtable.get(cType) != null) {
                             Connection connection = connectionsHashtable.get(cType);
@@ -2977,8 +3005,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         if (params == null || params.isEmpty()) {
             return false;
         }
-        for (int i = 0, size = params.size(); i < size; i++) {
-            ElementParameterType param = (ElementParameterType) params.get(i);
+        for (Object param2 : params) {
+            ElementParameterType param = (ElementParameterType) param2;
             if (param != null) {
                 if (param.getName() != null && param.getName().equals(EParameterName.MONITOR_CONNECTION.getName())) {
                     return Boolean.valueOf(param.getValue());
@@ -3368,7 +3396,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         if (node instanceof Node) {
             component = ((Node) node).getDelegateComponent();
         }
-        String baseName = component.getDisplayName();
+        String baseName = component.getOriginalName();
+        if (EComponentType.GENERIC.equals(component.getComponentType())) {
+            baseName = component.getDisplayName();
+        }
         return UniqueNodeNameGenerator.generateUniqueNodeName(baseName, uniqueNodeNameList);
     }
 
@@ -4000,11 +4031,14 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             // .getLog4jPreferences(Log4jPrefsConstants.LOG4J_ENABLE_NODE, false);
             IEclipsePreferences projectPreferences = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
                     .getLog4jPreferences(Log4jPrefsConstants.LOG4J_ENABLE_NODE, false);
-            projectPreferences.removePreferenceChangeListener(preferenceEventListener);
-
+            if (projectPreferences != null) {
+                projectPreferences.removePreferenceChangeListener(preferenceEventListener);
+            }
             IEclipsePreferences projectPreferencesLog4jVersion = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
                     .getLog4jPreferences(Log4jPrefsConstants.LOG4J_SELECT_VERSION2, false);
-            projectPreferencesLog4jVersion.removePreferenceChangeListener(preferenceEventListener);
+            if (projectPreferencesLog4jVersion != null) {
+                projectPreferencesLog4jVersion.removePreferenceChangeListener(preferenceEventListener);
+            }
         }
         generatingProcess = null;
         editor = null;
@@ -4492,6 +4526,18 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     private void loadAdditionalProperties() {
         if (additionalProperties == null) {
             additionalProperties = new HashMap<Object, Object>();
+            try {
+                if (property.getItem() != null && ERepositoryObjectType.getType(property) != null) {
+                    boolean isRouteProcess = ERepositoryObjectType.getType(property).equals(ERepositoryObjectType.PROCESS_ROUTE);
+                    if (!isRouteProcess && "ROUTE"
+                            .equals(this.property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
+                        this.property.getAdditionalProperties().remove(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+                    }
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+
             for (Object key : this.property.getAdditionalProperties().keySet()) {
                 additionalProperties.put(key, this.property.getAdditionalProperties().get(key));
             }
@@ -4528,8 +4574,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         Project project = ProjectManager.getInstance().getCurrentProject();
         boolean updateStandardLog = false;
         boolean updateImplicitContext = false;
-        for (int j = 0; j < listParamType.size(); j++) {
-            ElementParameterType pType = (ElementParameterType) listParamType.get(j);
+        for (Object element : listParamType) {
+            ElementParameterType pType = (ElementParameterType) element;
             if (Boolean.valueOf(pType.getValue())) {
                 if (EParameterName.STATANDLOG_USE_PROJECT_SETTINGS.getName().equals(pType.getName())) {
                     ProjectSettingManager.reloadStatsAndLogFromProjectSettings(this, project, null);
@@ -4623,6 +4669,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
 
     private void saveJobletNode(AbstractJobletContainer jobletContainer) {
+        if (CommonsPlugin.isHeadless()) {
+            return;
+        }
         INode jobletNode = jobletContainer.getNode();
         IProcess jobletProcess = jobletNode.getComponent().getProcess();
         if (jobletProcess == null) {

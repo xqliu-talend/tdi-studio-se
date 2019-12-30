@@ -58,7 +58,11 @@ public class TaCoKitConst {
 
     public static final String PROP_COMPONENT = "component.java.coordinates"; //$NON-NLS-1$
 
+    public static final String PROP_COMPONENT_SEPARATOR = ","; //$NON-NLS-1$
+
     public static final String PROP_REGISTRY = "component.java.registry"; //$NON-NLS-1$
 
     public static final String COMPONENT_NAME_PREFIX = "t"; //$NON-NLS-1$
+
+    public static final String BASE_HELP_LINK = "org.talend.help."; //$NON-NLS-1$
 }

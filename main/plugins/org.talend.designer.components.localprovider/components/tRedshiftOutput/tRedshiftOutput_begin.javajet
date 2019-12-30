@@ -61,6 +61,10 @@ skeleton="../templates/db_output_bulk.skeleton"
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node, "__USE_BATCH__"));
     String batchSize = ElementParameterParser.getValue(node, "__BATCH_SIZE__");
 
+    boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
+	
+	String alternateSchema = ElementParameterParser.getValue(node, "__ALTERNATE_SCHEMA__");
+
     String rejectConnName = null;
     List< ? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
     if(rejectConns != null && rejectConns.size() > 0) {
@@ -103,9 +107,15 @@ if(columnList != null && columnList.size() > 0) {
 String dbschema_<%=cid%> = null;
 <%
 if(("true").equals(useExistingConn)) {
+	if(useAlternateSchema) {
+	%>
+	dbschema_<%=cid%> = <%=alternateSchema%>;
+	<%
+	} else {
 	%>
 	dbschema_<%=cid%> = (String)globalMap.get("schema_" + "<%=ElementParameterParser.getValue(node,"__CONNECTION__")%>");
 	<%
+	}
 } else {
 	%>
 	dbschema_<%=cid%> = <%=dbschema%>;
@@ -211,21 +221,8 @@ if(("true").equals(useExistingConn)) {
 	String conn = "conn_" + connection;
 	%>
 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
-	
 <%
-	//Retrieve connection node and check if SSO was used for correct logging
-	List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
-	String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
-	for (INode ne : nodes) {
-		if (connectionRedShift.equals(ne.getUniqueName())) {
-			jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
-		}
-	}
-	if ("SSO".equals(jdbcUrl)){
-		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", null);
-	} else {
-		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");
-	}
+	dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");
 %>
 	<%
 } else {
@@ -254,30 +251,19 @@ if(("true").equals(useExistingConn)) {
 <%
     }
 %>
-    String url_<%=cid%> = sbuilder_<%=cid%>.toString();
-	
-	
-	
-	
-	
-	
-<%  if ("SSO".equals(jdbcUrl)){%>
-		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>);
-		<%dbLog.conn().connTry(dbLog.var("url"), null);%>
-		<%dbLog.conn().connDone(dbLog.var("url"));%>
-<%  } else {%>
-		String dbUser_<%=cid %> = <%=dbuser%>;
-		<%
-		String passwordFieldName = "__PASS__";
-		%>
+	String url_<%=cid%> = sbuilder_<%=cid%>.toString();
+	String dbUser_<%=cid %> = <%=dbuser%>;
+	<%
+	String passwordFieldName = "__PASS__";
+	%>
 
-		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-		String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
-		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
-		<%dbLog.conn().connTry(dbLog.var("url"), dbLog.var("dbUser"));%>
-		<%dbLog.conn().connDone(dbLog.var("url"));%>
-<%  }%>
+	String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
+	conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
+	<%dbLog.conn().connTry(dbLog.var("url"), dbLog.var("dbUser"));%>
+	<%dbLog.conn().connDone(dbLog.var("url"));%>
+		
 	resourceMap.put("conn_<%=cid%>", conn_<%=cid%>);
     conn_<%=cid%>.setAutoCommit(false);
 	<%

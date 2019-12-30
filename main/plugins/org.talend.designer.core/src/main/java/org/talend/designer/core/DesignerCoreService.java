@@ -767,6 +767,7 @@ public class DesignerCoreService implements IDesignerCoreService {
         return JavaProcessUtil.getNeededModules(process, options);
     }
 
+
     @Override
     public Set<ModuleNeeded> getNeededModules(INode node, boolean withChildrens) {
         int options = TalendProcessOptionConstants.MODULES_DEFAULT;

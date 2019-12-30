@@ -63,12 +63,12 @@
 			<DEFAULT>Redshift</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="USER" FIELD="TEXT" NUM_ROW="5" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (JDBC_URL=='STANDARD')" 
+		<PARAMETER NAME="USER" FIELD="TEXT" NUM_ROW="5" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') " 
 			REPOSITORY_VALUE="USERNAME" REQUIRED="true" GROUP="DB_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="PASS" FIELD="PASSWORD" NUM_ROW="5" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (JDBC_URL=='STANDARD')" 
+		<PARAMETER NAME="PASS" FIELD="PASSWORD" NUM_ROW="5" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') " 
 			REPOSITORY_VALUE="PASSWORD" REQUIRED="true" GROUP="DB_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
@@ -498,6 +498,7 @@
 			
 			<TEMPLATE_PARAM SOURCE="self.REGION" TARGET="tROB.REGION" />
 			<TEMPLATE_PARAM SOURCE="self.INHERIT_CREDENTIALS" TARGET="tROB.INHERIT_CREDENTIALS" />
+			<TEMPLATE_PARAM SOURCE="self.INHERIT_CREDENTIALS" TARGET="tRBE.INHERIT_CREDENTIALS" />
 			<TEMPLATE_PARAM SOURCE="self.ASSUME_ROLE_S3" TARGET="tROB.ASSUME_ROLE" />
 			<TEMPLATE_PARAM SOURCE="self.ARN" TARGET="tROB.ARN" />
 			<TEMPLATE_PARAM SOURCE="self.ROLE_SESSION_NAME" TARGET="tROB.ROLE_SESSION_NAME" />
@@ -541,14 +542,14 @@
 			<IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
 				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-core-2.9.9.jar" MODULE="jackson-core-2.9.9.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.9"
+			<IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-databind-2.9.9.jar" MODULE="jackson-databind-2.9.9.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.9"
+			<IMPORT NAME="jackson-databind-2.10.1.jar" MODULE="jackson-databind-2.10.1.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.10.1"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-annotations-2.9.0.jar" MODULE="jackson-annotations-2.9.0.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0"
+			<IMPORT NAME="jackson-annotations-2.10.1.jar" MODULE="jackson-annotations-2.10.1.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.10.1"
 				REQUIRED="true" />
 			<IMPORT NAME="httpcore-4.4.9.jar" MODULE="httpcore-4.4.9.jar"
 				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9"

@@ -31,6 +31,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.core.CorePlugin;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
@@ -52,13 +55,15 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.utils.BitwiseOptionUtils;
-import org.talend.designer.core.CheckLogManamger;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.ElementParameterTypeImpl;
 import org.talend.designer.maven.utils.MavenVersionHelper;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
+import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 /**
  * DOC xye class global comment. Detailled comment
@@ -83,7 +88,10 @@ public class JavaProcessUtil {
 
         // call recursive function to get all dependencies from job & subjobs
         getNeededModules(process, searchItems, modulesNeeded, options);
-
+        Set<ModuleNeeded> childrenModules = null;
+        if (!BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CHILDREN)) {
+            childrenModules = getChildrenModulesFromProcess(process, searchItems);
+        }
         /*
          * Remove duplicates in the modulesNeeded list after having prioritize the modules. Details in the
          * ModuleNeededComparator class.
@@ -115,12 +123,11 @@ public class JavaProcessUtil {
             new BigDataJobUtil(process).removeExcludedModules(modulesNeeded);
         }
 
+        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, childrenModules,
+                Log4jPrefsSettingManager.getInstance().isSelectLog4j2(), process);
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
-    public static void updateLog4jToModuleList(Collection<ModuleNeeded> jarList) {
-        CheckLogManamger.updateLog4jToModuleList(jarList);
-    }
     // for MapReduce job, if the jar on Xml don't set MRREQUIRED="true", shouldn't add it to
     // DistributedCache
     public static Set<String> getNeededLibraries(final IProcess process, int options) {
@@ -182,6 +189,10 @@ public class JavaProcessUtil {
             if (item instanceof ProcessItem) {
                 modulesNeeded.addAll(ModulesNeededProvider.getModulesNeededForProcess((ProcessItem) item, process));
             }
+        } else {
+            Set<ModuleNeeded> optionalJarsOnlyForRoutines = new HashSet<ModuleNeeded>();
+            optionalJarsOnlyForRoutines.addAll(ModulesNeededProvider.getSystemRunningModules());
+            modulesNeeded.addAll(optionalJarsOnlyForRoutines);
         }
 
         boolean isTestcaseProcess = ProcessUtils.isTestContainer(process);
@@ -366,6 +377,22 @@ public class JavaProcessUtil {
         }
 
         return new HashSet<ModuleNeeded>(modulesNeeded);
+    }
+
+    private static Set<ModuleNeeded> getChildrenModulesFromProcess(final IProcess process, Set<ProcessItem> searchItems) {
+        Set<ModuleNeeded> childrenModules = new HashSet<ModuleNeeded>();
+        List<INode> nodeList = (List<INode>) process.getGeneratingNodes();
+        if (nodeList != null) {
+
+            for (INode node : nodeList) {
+                List<ModuleNeeded> findeModules = getChildrenModules(node, searchItems,
+                        TalendProcessOptionConstants.MODULES_WITH_CHILDREN);
+                if (findeModules.size() > 0) {
+                    childrenModules.addAll(findeModules);
+                }
+            }
+        }
+        return childrenModules;
     }
 
     static List<ModuleNeeded> getChildrenModules(final INode node, Set<ProcessItem> searchItems, int options) {
@@ -620,9 +647,9 @@ public class JavaProcessUtil {
             if (value != null && value instanceof List) {
                 List list = (List) value;
                 boolean updateCustomMavenUri = false;
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i) instanceof HashMap) {
-                        HashMap map = (HashMap) list.get(i); // JAR_NAME
+                for (Object element : list) {
+                    if (element instanceof HashMap) {
+                        HashMap map = (HashMap) element; // JAR_NAME
                         Object object = null;
                         if (name.equals("DRIVER_JAR")) { //$NON-NLS-1$
                             object = map.get("JAR_NAME"); //$NON-NLS-1$
@@ -869,5 +896,29 @@ public class JavaProcessUtil {
         }
         module.getExtraAttributes().put("IS_OSGI_EXCLUDED", "true");
         return module;
+    }
+
+    public static boolean needMigration(String componentName, EList parameters) {
+        if (parameters != null) {
+            Map<String, String> properties = new HashMap<>();
+            for (final Object elem : parameters) {
+                ElementParameterTypeImpl parameter = (ElementParameterTypeImpl) elem;
+                if (EParameterFieldType.TECHNICAL.name().equals(parameter.getField())
+                        && parameter.getName().endsWith(".__version")) { //$NON-NLS-1$
+                    properties.put(parameter.getName(), parameter.getValue());
+                }
+            }
+            if (properties.size() > 0) {
+                try {
+                    ITaCoKitService tacokitService = ITaCoKitService.getInstance();
+                    if (tacokitService != null) {
+                        return tacokitService.isNeedMigration(componentName, properties);
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }
+        return false;
     }
 }
