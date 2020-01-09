@@ -314,6 +314,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
                 if (contextId == null || "".equals(contextId)) {
                     IMetadataConnection metadataConnection = null;
                     metadataConnection = ConvertionHelper.convert(connection);
+                    metadataConnection.setAdditionalParams(ConvertionHelper.convertAdditionalParameters(connection));
                     isStatus = checkConnection(metadataConnection);
                 } else {
                     isStatus = true;
@@ -555,6 +556,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
                             }
                         }
                     } else {
+                        iMetadataConnection.setAdditionalParams(ConvertionHelper.convertAdditionalParameters(existConnection));
                         isStatus = checkConnection(iMetadataConnection);
                     }
                 }
@@ -690,6 +692,15 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
         job.setUser(true);
         job.schedule();
+    }
+
+    // for oracle custom with ssl enable, should add TRUSTSTORE and KEYSTORE info
+    private void addAdditionalParam(IMetadataConnection iMetadataConnection) {
+        if (connParameters.getParameters().get("USE_SSL") != null) {
+            String additionalParams = iMetadataConnection.getAdditionalParams();
+            additionalParams += connParameters.getParameters().get("SSL_STRING");
+            iMetadataConnection.setAdditionalParams(additionalParams);
+        }
     }
 
     private void openParamemerDialog(Button button, IContextManager manager) {
