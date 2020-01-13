@@ -328,9 +328,29 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
                     + "csvWriter.writeNext(lengths);\r\n" + "csvWriter.writeNext(precisions);\r\n" //$NON-NLS-1$ //$NON-NLS-2$
                     + "csvWriter.writeNext(dbtypes);\r\n" + "while (rs.next()) {"; //$NON-NLS-1$ //$NON-NLS-2$
         }else{
-            codeStart = "java.lang.Class.forName(\"" + info.getDriverClassName() + "\");\r\n" + "String url = \"" + info.getUrl() //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    + "\";\r\n" + "java.sql.Connection conn = java.sql.DriverManager.getConnection(url, \"" + info.getUsername() //$NON-NLS-1$ //$NON-NLS-2$
-                    + "\", \"" + info.getPwd() + "\");\r\n" + "java.sql.Statement stm = " + createStatament + ";\r\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            StringBuilder sb = new StringBuilder();
+            sb.append("java.util.Properties prop = new java.util.Properties();\r\n");
+            sb.append("String additionalParams = \"" + info.getadditionalParams() + "\";\r\n");
+            sb.append("additionalParams = additionalParams.replaceAll(\"&\", \"\\n\");\r\n");
+            sb.append("String dbType = \"" + info.getDbType() + "\";\r\n");
+            sb.append("String user = \"" + info.getUsername() + "\";\r\n");
+            sb.append("if(user != null && !\"\".equals(user)) {\r\n");
+            sb.append("    prop.put(\"user\", user);\r\n");
+            sb.append("}\r\n");
+            sb.append("String password =  \"" + info.getPwd() + "\";\r\n");
+            sb.append("if(password != null && !\"\".equals(password)) {\r\n");
+            sb.append("    prop.put(\"password\", password);\r\n");
+            sb.append("}\r\n");
+            sb.append("try{\r\n");
+            sb.append(
+                    "    if (additionalParams != null && !\"\".equals(additionalParams) && dbType.toUpperCase().contains(\"ORACLE\")) {\r\n");
+            sb.append("        prop.load(new java.io.ByteArrayInputStream(additionalParams.getBytes()));\r\n");
+            sb.append("  }\r\n");
+            sb.append("}catch(IOException e){\r\n");
+            sb.append("}\r\n");
+            codeStart = sb.toString() + "java.lang.Class.forName(\"" + info.getDriverClassName() + "\");\r\n" + "String url = \"" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    + info.getUrl() + "\";\r\n" + "java.sql.Connection conn = java.sql.DriverManager.getConnection(url,prop);\r\n" //$NON-NLS-1$ //$NON-NLS-2$
+                    + "java.sql.Statement stm = " + createStatament + ";\r\n" //$NON-NLS-1$
                     + "try {\r\nstm.setFetchSize(" + fetchSize + ");\r\n} catch (Exception e) {\r\n// Exception is thrown if db don't support, no need to catch exception here\r\n} \r\n" //$NON-NLS-1$ //$NON-NLS-2$
                     + "java.sql.ResultSet rs = stm.executeQuery(" + memoSQL + ");\r\n" //$NON-NLS-1$ //$NON-NLS-2$
                     + "java.sql.ResultSetMetaData rsmd = rs.getMetaData();\r\n" + "int numbOfColumn = rsmd.getColumnCount();\r\n" //$NON-NLS-1$ //$NON-NLS-2$
