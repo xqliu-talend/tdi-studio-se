@@ -2273,6 +2273,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
                         IElementParameter ele = connectionNode.getElementParameter("CONNECTION_TYPE");
                         if (ele != null) {
                             type = (String) ele.getValue();
+                            if ("ORACLE_RAC".equals(ele.getValue())) {
+                                type = "ORACLE_CUSTOM";
+                            }
                         }
                     }
                     setAllConnectionParameters(type, connectionNode);
