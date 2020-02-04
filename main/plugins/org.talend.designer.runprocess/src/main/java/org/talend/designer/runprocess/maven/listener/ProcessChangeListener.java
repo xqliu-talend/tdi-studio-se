@@ -29,6 +29,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.resource.MoveResourceChange;
 import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
@@ -273,17 +275,23 @@ public class ProcessChangeListener implements PropertyChangeListener {
             if (getAllProcessTypes().contains(processType)) {
                 IFolder processTypeFolder = getAggregatorPomsHelper().getProcessFolder(processType);
                 IFolder sourceFolder = processTypeFolder.getFolder(sourcePath);
-                try {
-                    removeFromParentSourceFolder(sourceFolder);
-                    IFolder targetFolder = processTypeFolder.getFolder(targetPath);
-                    if (!targetFolder.exists()) {
-                        targetFolder.create(true, true, null);
+                if (!sourceFolder.exists()) {
+                    return;
+                }
+                synchronized (sourceFolder) {
+                    try {
+                        sourceFolder.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+                        removeFromParentSourceFolder(sourceFolder);
+                        IFolder targetFolder = processTypeFolder.getFolder(targetPath);
+                        if (!targetFolder.exists()) {
+                            ResourceUtils.createFolder(targetFolder);
+                        }
+                        MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
+                        change.perform(new NullProgressMonitor());
+                        updatePomsInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
+                    } catch (OperationCanceledException | CoreException | PersistenceException e) {
+                        ExceptionHandler.process(e);
                     }
-                    MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
-                    change.perform(new NullProgressMonitor());
-                    updatePomsInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
-                } catch (OperationCanceledException | CoreException e) {
-                    ExceptionHandler.process(e);
                 }
             }
         }
