@@ -54,12 +54,12 @@ if (("true").equals(useExistingConn)) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
       ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+	  break;
     }
   }
 } else {
   sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
   ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
-  break;
 %>
   int connectionTimeout_<%=cid %> = Integer.valueOf(<%=timeoutValue %>);
 <%
@@ -145,9 +145,9 @@ if (sftp) { // *** sftp *** //
   	<%if(use_encoding) {%>
   		c_<%=cid%>.setFilenameEncoding(<%=encoding%>);
   	<%}%>
-<%
-	} else {
-%>    
+  <%
+  	} else {
+  %>    
         com.jcraft.jsch.ChannelSftp c_<%=cid%> = (com.jcraft.jsch.ChannelSftp)globalMap.get("<%=conn %>");
         <%if(isLog4jEnabled){%>
             if(c_<%=cid%>!=null && c_<%=cid%>.getSession()!=null) {
