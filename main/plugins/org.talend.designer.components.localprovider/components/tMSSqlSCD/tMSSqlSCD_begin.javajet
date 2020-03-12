@@ -765,9 +765,9 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
     <%@ include file="../templates/tMSSql/_tMSSqlConnection.javajet"%>
 
     if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
-        tableName_<%=cid%> = java.lang.String.format("[%s]", <%=table%>);
+        tableName_<%=cid%> = java.lang.String.format("[%s]", <%=dbtable%>);
     } else {
-        tableName_<%=cid%> = java.lang.String.format("[%s].[%s]", dbschema_<%=cid%>, <%=table%>);
+        tableName_<%=cid%> = java.lang.String.format("[%s].[%s]", dbschema_<%=cid%>, <%=dbtable%>);
     }
 	org.talend.designer.components.util.mssql.MSSqlGenerateTimestampUtil mssqlGTU_<%=cid%> = org.talend.designer.components.util.mssql.MSSqlUtilFactory.getMSSqlGenerateTimestampUtil();	
     String tmpValue_<%=cid%> = null;    
