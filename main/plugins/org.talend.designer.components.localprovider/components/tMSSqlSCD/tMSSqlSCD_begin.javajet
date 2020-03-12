@@ -765,9 +765,9 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
     <%@ include file="../templates/tMSSql/_tMSSqlConnection.javajet"%>
 
     if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
-        tableName_<%=cid%> = <%=dbtable%>;
+        tableName_<%=cid%> = java.lang.String.format("[%s]", <%=table%>);
     } else {
-        tableName_<%=cid%> = dbschema_<%=cid%> + "].[" + <%=dbtable%>;
+        tableName_<%=cid%> = java.lang.String.format("[%s].[%s]", dbschema_<%=cid%>, <%=table%>);
     }
 	org.talend.designer.components.util.mssql.MSSqlGenerateTimestampUtil mssqlGTU_<%=cid%> = org.talend.designer.components.util.mssql.MSSqlUtilFactory.getMSSqlGenerateTimestampUtil();	
     String tmpValue_<%=cid%> = null;    
@@ -879,7 +879,7 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
             <%
         }
         %>
-        String tmpQuery_<%=cid%> = "SELECT MAX([<%=scdConfiger.getSurrogateKeyField()%>]) FROM [" + tableName_<%=cid%> + "]";
+        String tmpQuery_<%=cid%> = "SELECT MAX([<%=scdConfiger.getSurrogateKeyField()%>]) FROM " + tableName_<%=cid%>;
         java.sql.Statement tmpStmt_<%=cid%> = conn_<%=cid%>.createStatement();
         java.sql.ResultSet tmpRS_<%=cid%> = tmpStmt_<%=cid%>.executeQuery(tmpQuery_<%=cid%>);
         <%

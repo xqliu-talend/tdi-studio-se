@@ -88,7 +88,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	if(identityInsert && useExistingConnection ) {
         %>
 		if ( isShareIdentity_<%=cid%> ) {
-			String setIdentityInsertONSQL_<%=cid%> = "SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON";
+			String setIdentityInsertONSQL_<%=cid%> = "SET IDENTITY_INSERT "+ tableName_<%=cid%> +" ON";
 			<%dbLog.data().sqlExecuteTry(dbLog.var("setIdentityInsertONSQL"));%>
         	stmt_<%=cid %>.execute(setIdentityInsertONSQL_<%=cid%>);
 			<%dbLog.data().sqlExecuteDone(dbLog.var("setIdentityInsertONSQL"));%>
@@ -450,7 +450,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 if(identityInsert){
 %>
-    String setIdentityInsertOFFSQL_<%=cid%> = "SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] OFF";
+    String setIdentityInsertOFFSQL_<%=cid%> = "SET IDENTITY_INSERT "+ tableName_<%=cid%> +" OFF";
     <%dbLog.data().sqlExecuteTry(dbLog.var("setIdentityInsertOFFSQL"));%>
     stmt_<%=cid %>.execute(setIdentityInsertOFFSQL_<%=cid%>);
     <%dbLog.data().sqlExecuteDone(dbLog.var("setIdentityInsertOFFSQL"));%>

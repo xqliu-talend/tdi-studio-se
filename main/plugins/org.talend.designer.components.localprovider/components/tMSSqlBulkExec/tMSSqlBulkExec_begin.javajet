@@ -180,9 +180,9 @@ if(("EXPORT").equals(action)) {
 	<%@ include file="../templates/tMSSql/_tMSSqlConnection.javajet"%>
 	String tableName_<%=cid%> = null;
 	if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
-		tableName_<%=cid%> = <%=table%>;
+		tableName_<%=cid%> = java.lang.String.format("[%s]", <%=table%>);
 	} else {
-		tableName_<%=cid%> = dbschema_<%=cid%> + "].[" + <%=table%>;
+		tableName_<%=cid%> = java.lang.String.format("[%s].[%s]", dbschema_<%=cid%>, <%=table%>);
 	}
 	<%
 	String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");

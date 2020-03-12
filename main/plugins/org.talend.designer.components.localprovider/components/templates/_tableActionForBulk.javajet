@@ -47,7 +47,7 @@ if (!isParallelize) {
 					}
 				}
 				String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
-				String queryForExec = "CREATE TABLE [" + tableName_<%=cid%> + "](" + columnsPart + ")";
+				String queryForExec = "CREATE TABLE " + tableName_<%=cid%> + "(" + columnsPart + ")";
 				<%if(isLog4jEnabled_tableAction){%>
 					log.debug("<%=cid%> - Creating table with query: " + queryForExec);
 				<%}%>
@@ -91,7 +91,7 @@ if (!isParallelize) {
 					}
 				}
 				String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
-				String queryForExec = "CREATE TABLE [" + tableName_<%=cid%> + "](" + columnsPart + ")";
+				String queryForExec = "CREATE TABLE " + tableName_<%=cid%> + "(" + columnsPart + ")";
 				<%if(isLog4jEnabled_tableAction){%>
 					log.debug("<%=cid%> - Creating table with query: " + queryForExec);
 				<%}%>
@@ -289,7 +289,7 @@ if (!isParallelize) {
 							}
 						}
 						String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
-						String queryForExec = "CREATE TABLE [" + tableName_<%=cid%> + "](" + columnsPart + ")";
+						String queryForExec = "CREATE TABLE " + tableName_<%=cid%> + "(" + columnsPart + ")";
 						<%if(isLog4jEnabled_tableAction){%>
 							log.debug("<%=cid%> - Creating table with query: " + queryForExec);
 						<%}%>
@@ -343,7 +343,7 @@ if (!isParallelize) {
 						}
 					}
 					String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
-					String queryForExec = "CREATE TABLE [" + tableName_<%=cid%> + "](" + columnsPart + ")";
+					String queryForExec = "CREATE TABLE " + tableName_<%=cid%> + "(" + columnsPart + ")";
 					<%if(isLog4jEnabled_tableAction){%>
 						log.debug("<%=cid%> - Creating table with query: " + queryForExec);
 					<%}%>
