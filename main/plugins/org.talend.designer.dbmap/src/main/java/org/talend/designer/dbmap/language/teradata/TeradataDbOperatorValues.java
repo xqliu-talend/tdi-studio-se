@@ -25,15 +25,15 @@ public class TeradataDbOperatorValues extends DbOperatorValues {
         operators.add(getDefaultOperator());
         //operators.add(new DbOperator("EQUAL", "EQ")); //$NON-NLS-1$
         //
-        operators.add(new DbOperator("DIFFERENT", "NE")); //$NON-NLS-1$ //$NON-NLS-2$
-        operators.add(new DbOperator("STRICTLY_INFERIOR", "LT")); //$NON-NLS-1$ //$NON-NLS-2$
-        operators.add(new DbOperator("INFERIOR_OR_EQUAL", "LE")); //$NON-NLS-1$ //$NON-NLS-2$
-        operators.add(new DbOperator("SUPERIOR", "GT")); //$NON-NLS-1$ //$NON-NLS-2$
-        operators.add(new DbOperator("SUPERIOR_OR_EQUAL", "GE")); //$NON-NLS-1$ //$NON-NLS-2$
+        operators.add(new DbOperator("DIFFERENT", "<>")); //$NON-NLS-1$ //$NON-NLS-2$
+        operators.add(new DbOperator("STRICTLY_INFERIOR", "<")); //$NON-NLS-1$ //$NON-NLS-2$
+        operators.add(new DbOperator("INFERIOR_OR_EQUAL", "<=")); //$NON-NLS-1$ //$NON-NLS-2$
+        operators.add(new DbOperator("SUPERIOR", ">")); //$NON-NLS-1$ //$NON-NLS-2$
+        operators.add(new DbOperator("SUPERIOR_OR_EQUAL", ">=")); //$NON-NLS-1$ //$NON-NLS-2$
 
     }
 
     public IDbOperator getDefaultOperator() {
-        return new DbOperator("EQUAL", "EQ"); //$NON-NLS-1$  //$NON-NLS-2$
+        return new DbOperator("EQUAL", "="); //$NON-NLS-1$  //$NON-NLS-2$
     }
 }
