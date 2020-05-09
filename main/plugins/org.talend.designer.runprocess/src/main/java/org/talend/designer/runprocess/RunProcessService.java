@@ -494,4 +494,9 @@ public class RunProcessService implements IRunProcessService {
         return delegateService.isdebug();
     }
 
+    @Override
+    public boolean isCIMode() {
+        return delegateService.isCIMode();
+    }
+
 }

@@ -628,8 +628,7 @@ public class TalendJavaProjectManager {
 
     private static void generatePom(Item item, int option, IProcessor processor) throws Exception {
         if (processor instanceof MavenJavaProcessor) {
-            LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
-            LastGenerationInfo.getInstance().clearHighPriorityModuleNeeded();
+            LastGenerationInfo.getInstance().clearCaches();
             // Gen poms only
             ((MavenJavaProcessor) processor).generatePom(option);
         }

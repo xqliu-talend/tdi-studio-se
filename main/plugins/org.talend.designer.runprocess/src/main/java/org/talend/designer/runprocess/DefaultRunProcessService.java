@@ -958,4 +958,9 @@ public class DefaultRunProcessService implements IRunProcessService {
         }
     }
 
+    @Override
+    public boolean isCIMode() {
+        return ProcessorUtilities.isCIMode();
+    }
+
 }
