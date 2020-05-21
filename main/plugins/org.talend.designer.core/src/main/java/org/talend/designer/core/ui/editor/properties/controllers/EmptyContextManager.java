@@ -107,10 +107,4 @@ public class EmptyContextManager implements IContextManager, Cloneable {
         // TODO Auto-generated method stub
         return false;
     }
-
-    @Override
-    public void saveToEmf(EList contextTypeList, boolean useInternalId) {
-        // TODO Auto-generated method stub
-
-    }
 }

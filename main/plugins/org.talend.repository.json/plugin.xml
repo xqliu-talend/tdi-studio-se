@@ -178,10 +178,6 @@
            class="org.talend.repository.json.util.JSONProviderService"
            serviceId="IJSONProviderService">
      </Service>
-     <Service
-            class="org.talend.repository.json.service.JsonFileConnectionContextUpdateService"
-            serviceId="IRepositoryContextUpdateService">
-      </Service>
    </extension>         
    <extension
          point="org.talend.repository.items.importexport.handler">

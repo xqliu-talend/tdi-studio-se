@@ -276,7 +276,7 @@ public class ResourceContextHelper {
 
             }
 
-            contextManager.saveToEmf(contextItem.getContext(), false);
+            contextManager.saveToEmf(contextItem.getContext());
             RepositoryUpdateManager.updateContext((JobContextManager) contextManager, contextItem);
             final IWorkspaceRunnable op = new IWorkspaceRunnable() {
 
