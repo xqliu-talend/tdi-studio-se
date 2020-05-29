@@ -185,6 +185,25 @@ public class GenericTableUtils {
         return jars.toString();
     }
 
+    public static String getDriverJarUris(List<String> listString) {
+        StringBuffer jars = null;
+        if (listString == null) {
+            return null;
+        }
+        for (String str : listString) {
+            if (jars == null) {
+                jars = new StringBuffer();
+            } else {
+                jars.append(";");
+            }
+            jars.append(str);
+        }
+        if (jars == null) {
+            return null;
+        }
+        return jars.toString();
+    }
+
     public static String getDriverJarPath(String mvnPath){
         String mvnUrl = TalendQuoteUtils.removeQuotesIfExist(mvnPath);
         if (MavenUrlHelper.isMvnUrl(mvnUrl)) {

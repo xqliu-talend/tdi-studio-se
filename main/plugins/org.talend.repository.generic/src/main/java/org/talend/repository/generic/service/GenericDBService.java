@@ -369,6 +369,10 @@ public class GenericDBService implements IGenericDBService{
                     if (jars != null) {
                         dbConnection.setDriverJarPath(jars);
                     }
+                    String driverJarUris = GenericTableUtils.getDriverJarUris(listString);
+                    if (driverJarUris != null) {
+                        dbConnection.setDriverJarUri(driverJarUris);
+                    }
                 }
             }
         }
