@@ -92,6 +92,12 @@
 				<%}%>  
 <%
 			}
+		}else{
+		    if(!moveToCurrentDir){
+%>
+		  		ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+<%	
+			}
 		}
 	}
 %>

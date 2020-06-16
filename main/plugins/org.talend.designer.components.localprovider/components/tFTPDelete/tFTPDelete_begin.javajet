@@ -209,12 +209,16 @@ int nb_file_<%=cid%> = 0;
 					log.info("<%=cid%> - Uses an existing connection. Connection hostname: " +  ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + ".");
 				}
 			<%}%>
-
+		  	<%if(!moveToCurrentDir){%>
+		  		String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
+		  	<%}%>
   		<%} else {
             passwordFieldName = "__PASSWORD__";
 %>
             <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
         <%}%>
+		String remotedir<%=cid %> = <%=remotedir%>;
+		ftp_<%=cid %>.changeWorkingDirectory(remotedir<%=cid %>);
 <%
         }//common code ftp and ftps:
 %>

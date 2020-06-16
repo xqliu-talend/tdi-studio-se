@@ -294,13 +294,15 @@ int nb_file_<%=cid%> = 0;
 <%
         if(createDirIfNotExist) {
 %>
-            String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
-            for (String dir: dirsTree_<%=cid %>) {
-                ftp_<%=cid %>.makeDirectory(dir);
-                ftp_<%=cid %>.changeWorkingDirectory(dir);
-            }
-
-            ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+			boolean isDirectoryExist_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
+			if(!isDirectoryExist_<%=cid %>){
+				String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
+				for (String dir: dirsTree_<%=cid %>) {
+					ftp_<%=cid %>.makeDirectory(dir);
+					ftp_<%=cid %>.changeWorkingDirectory(dir);
+				}
+				ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+			}
 <%
         }
 %>
