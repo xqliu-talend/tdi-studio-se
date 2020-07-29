@@ -2263,6 +2263,13 @@ public class CLASS {
         protected String getRProtectedChar() {
             return "`";
         }
+        protected String setNullable(boolean nullable) {
+            if(!nullable) {
+                return " not null ";
+            } else {
+                return " null ";
+            }
+        }
         public String generateSetStmt(String typeToGenerate, Column column, int index, 
                 String incomingConnName, String cid, int actionType) {
             boolean isObject = false;
