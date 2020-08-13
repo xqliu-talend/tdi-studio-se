@@ -20,6 +20,7 @@ import org.talend.designer.unifiedcomponent.unifier.AbstractComponentsUnifier;
  */
 public class JDBCComponentsUnifier extends AbstractComponentsUnifier {
 
+    private String displayName = "JDBC";
     /*
      * (non-Javadoc)
      *
@@ -27,7 +28,12 @@ public class JDBCComponentsUnifier extends AbstractComponentsUnifier {
      */
     @Override
     public String getDisplayName() {
-        return "JDBC";
+        return displayName;
     }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
 
 }

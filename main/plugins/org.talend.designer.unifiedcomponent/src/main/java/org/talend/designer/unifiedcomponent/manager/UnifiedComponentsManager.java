@@ -35,6 +35,7 @@ import org.talend.designer.unifiedcomponent.component.DelegateComponent;
 import org.talend.designer.unifiedcomponent.component.UnifiedObject;
 import org.talend.designer.unifiedcomponent.delegate.service.IComponentDelegate;
 import org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier;
+import org.talend.designer.unifiedcomponent.unifier.jdbc.JDBCComponentsUnifier;
 
 /**
  *
@@ -90,6 +91,13 @@ public class UnifiedComponentsManager {
                     compUnifier.setDelegateComponent(delegateComp);
                     initDelegateComponent(compUnifier);
                 }
+            }
+            // init additional JDBC component
+            JDBCComponentsUnifier jdbcUnifier = new JDBCComponentsUnifier();
+            jdbcUnifier.setDisplayName("Delta Lake");
+            for (IComponentDelegate delegateComp : componentDelegates) {
+                jdbcUnifier.setDelegateComponent(delegateComp);
+                initDelegateComponent(jdbcUnifier);
             }
         }
 
