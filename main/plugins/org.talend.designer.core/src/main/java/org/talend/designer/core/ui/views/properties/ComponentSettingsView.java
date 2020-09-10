@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -75,6 +76,7 @@ import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.connections.ConnectionLabel;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.notes.Note;
+import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.properties.connections.MainConnectionComposite;
 import org.talend.designer.core.ui.editor.properties.notes.AbstractNotePropertyComposite;
 import org.talend.designer.core.ui.editor.properties.notes.BasicNotePropertyComposite;
@@ -706,6 +708,11 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
                 String paletteType = ((Node) elem).getComponent().getPaletteType();
                 if (ComponentCategory.CATEGORY_4_CAMEL.getName().equals(paletteType)) {
                     categories = EElementType.NODE.getCategories();
+                    //camel
+//                    if(((Node) elem).getStatus() == Process.BREAKPOINT_STATUS) {
+                        categories = (EComponentCategory[]) ArrayUtils.add(categories, EComponentCategory.BREAKPOINT_CAMEL);
+//                    }
+                    //
                 }
             }
 
