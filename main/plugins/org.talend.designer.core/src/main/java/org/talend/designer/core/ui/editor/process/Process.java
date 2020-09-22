@@ -1756,7 +1756,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         IMetadataTable metaData;
         nType = createNodeType(fileFact, process, nList, node);
         nType.setComponentVersion(node.getComponent().getVersion());
-        nType.setComponentName(node.getComponent().getName());
+        nType.setComponentName(
+                StringUtils.isNotBlank(node.getUnifiedComponentDisplayName()) ? node.getComponent().getDisplayName()
+                        : node.getComponent().getName());
         nType.setPosX(node.getLocation().x);
         nType.setPosY(node.getLocation().y);
         nType.setOffsetLabelX(node.getNodeLabel().getOffset().x);
@@ -2330,7 +2332,12 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             nType = (NodeType) element;
             listParamType = nType.getElementParameter();
             String componentName = nType.getComponentName();
-            IComponent component = ComponentsFactoryProvider.getInstance().get(componentName, componentsType);
+            IComponent component = ComponentsFactoryProvider.getInstance().getComponentByDisplayName(componentName,
+                    componentsType);
+            if (component == null) {
+                // in case, try with name
+                component = ComponentsFactoryProvider.getInstance().get(componentName, componentsType);
+            }
             if (component == null) {
                 component = UnifiedComponentUtil.getDelegateComponent(componentName, componentsType);
             }
