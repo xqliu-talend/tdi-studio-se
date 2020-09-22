@@ -352,6 +352,18 @@ public class BuildJobManager {
                     if (jobFileTarget.isDirectory()) {
                         jobFileTarget = new File(destinationPath, jobZipFile.getName());
                     }
+
+                    // retry if jobzip file is scanned by antivirus
+                    for (int i = 0; i < 50; i++) {
+                        try (FileInputStream in = new FileInputStream(jobZipFile);
+                                java.nio.channels.FileLock lock = in.getChannel().lock()) {
+                            lock.release();
+                            break;
+                        } catch (Exception e) {
+                            Thread.sleep(100);
+                        }
+                    }
+
                     FilesUtils.copyFile(jobZipFile, jobFileTarget);
                     TimeMeasure.step(timeMeasureId, "Copy packaged file to target");
                     if (isSignJob) {
