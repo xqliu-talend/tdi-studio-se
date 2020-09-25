@@ -355,16 +355,14 @@ public class BuildJobManager {
 
                     // retry if jobzip file is scanned by antivirus
                     for (int i = 0; i < 50; i++) {
-                        try (FileInputStream in = new FileInputStream(jobZipFile);
-                                java.nio.channels.FileLock lock = in.getChannel().lock()) {
-                            lock.release();
+                        try {
+                            FilesUtils.copyFile(jobZipFile, jobFileTarget);
                             break;
                         } catch (Exception e) {
                             Thread.sleep(100);
                         }
                     }
 
-                    FilesUtils.copyFile(jobZipFile, jobFileTarget);
                     TimeMeasure.step(timeMeasureId, "Copy packaged file to target");
                     if (isSignJob) {
                         for (String line : logMsg.split("\n")) { //$NON-NLS-1$
