@@ -27,6 +27,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsService;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -37,6 +38,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -59,6 +61,7 @@ import org.talend.designer.core.generic.model.Component;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.model.RepositoryNode;
@@ -127,6 +130,9 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
                                 if (property.getName().equals("password")) {
                                     return getPassword(connection, paramValue.toString());
                                 }
+                                if (EConnectionParameterName.GENERIC_MAPPING_FILE.getDisplayName().equals(property.getName())) {
+                                    return getOriginalValue(connection, paramValue.toString());
+                                }
                                 return getRepositoryValueOfStringType(connection, paramValue.toString());
                             } else {
                                 return TalendQuoteUtils.addQuotes(""); //$NON-NLS-1$
@@ -147,6 +153,19 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
             return ((DatabaseConnection) connection).getDatabaseType();
         }
         return null;
+    }
+
+    private String getOriginalValue(Connection connection, String paramValue) {
+        String actualValue = paramValue;
+        if (ContextParameterUtils.isContextMode(connection, paramValue)) {
+            ContextItem contextItem = ContextUtils.getContextItemById2(connection.getContextId());
+            ContextType contextType = ContextUtils.getContextTypeByName(contextItem, connection.getContextName(), true);
+            String originalValue = ContextParameterUtils.getOriginalValue(contextType, paramValue);
+            if (org.apache.commons.lang.StringUtils.isNotBlank(originalValue)) {
+                actualValue = originalValue;
+            }
+        }
+        return actualValue;
     }
 
     private String getPassword(Connection connection, String value) {
