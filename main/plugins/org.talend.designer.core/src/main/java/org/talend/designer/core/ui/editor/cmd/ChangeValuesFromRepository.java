@@ -353,8 +353,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                             newParamName);
                     newRepValue = newParamName;
                 }
-                if ((repositoryValue == null && isGenericRepositoryValue) || isJDBCRepValue
-                        || getIfNeedInitFromRepository(param.getName())) {
+                if ((repositoryValue == null && isGenericRepositoryValue) || isJDBCRepValue) {
                     repositoryValue = newRepValue;
                     param.setRepositoryValue(repositoryValue);
                     param.setRepositoryValueUsed(true);
@@ -742,22 +741,6 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 }
             }
         }
-    }
-
-    private boolean getIfNeedInitFromRepository(String parameterName) {
-        if (!"MAPPING".equals(parameterName)) {
-            return false;
-        }
-        if (elem instanceof INode) {
-            INode node = (INode) elem;
-            if (node != null && node.getComponent() != null) {
-                String compname = node.getComponent().getName();
-                if ("tELTMap".equals(compname) || "tJDBCSCDELT".equals(compname)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private String getParamNameForOldJDBC(IElementParameter param) {
