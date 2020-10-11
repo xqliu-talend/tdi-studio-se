@@ -45,6 +45,7 @@ import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -320,10 +321,11 @@ public class DbTypeListController extends AbstractElementPropertySectionControll
         for (IElementParameter currentParam : node.getElementParameters()) {
             if (currentParam.getFieldType().equals(EParameterFieldType.MAPPING_TYPE)
                     && currentParam.isShow(node.getElementParameters())) {
-                currentDbms = (String) currentParam.getValue();
+                currentDbms = ContextParameterUtils.getValueIfContextModeFromNodeProcess(node, (String) currentParam.getValue());
                 hasMappingType = true;
             }
         }
+
 
         if (!hasMappingType) { // if there is no mapping type, then check if a db repository schema is used
             IElementParameter schemaTypeParameter = node.getElementParameter("SCHEMA_TYPE"); //$NON-NLS-1$
