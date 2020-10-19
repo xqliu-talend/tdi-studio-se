@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Profile;
 import org.eclipse.core.resources.IFile;
@@ -85,6 +86,8 @@ import org.talend.utils.io.FilesUtils;
 public class BuildJobManager {
 
     private static BuildJobManager instance = null;
+
+    private static Logger LOGGER = Logger.getLogger(BuildJobManager.class);
 
     private BuildJobManager() {
     }
@@ -354,11 +357,12 @@ public class BuildJobManager {
                     }
 
                     // retry if jobzip file is scanned by antivirus
-                    for (int i = 0; i < 50; i++) {
+                    for (int i = 0; i < 500; i++) {
                         try {
                             FilesUtils.copyFile(jobZipFile, jobFileTarget);
                             break;
                         } catch (Exception e) {
+                            LOGGER.warn("Can not copy " + jobZipFile + " to " + jobFileTarget, e);
                             Thread.sleep(100);
                         }
                     }
