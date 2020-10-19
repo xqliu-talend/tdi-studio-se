@@ -158,7 +158,8 @@ if(notNullCols != null && notNullCols.size() > 0) {
 				: Integer.parseInt(maxErrors);
 		}
 	}
-	catch (java.lang.Exception e) { }
+	catch (java.lang.Exception e) {
+	}
 */
 	if (!(("").equals(maxErrors) || ("\"\"").equals(maxErrors) || ("\"0\"").equals(maxErrors))) {
 %>
