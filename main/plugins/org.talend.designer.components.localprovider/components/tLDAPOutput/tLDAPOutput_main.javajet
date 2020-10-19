@@ -289,6 +289,7 @@ imports="
 							found = true;
 						}catch(javax.naming.NameNotFoundException nfEx_<%=cid%>)
 						{
+globalMap.put("<%=cid%>_ERROR_MESSAGE",nfEx_<%=cid%>.getMessage());
 							<%if(isLog4jEnabled){%>
 								log.warn("<%=cid%> - " + nfEx_<%=cid%>.getMessage());
 							<%}%>
@@ -304,6 +305,7 @@ imports="
 					}
 %>
 	}catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         whetherReject_<%=cid%> = true;
 <%
         if (("true").equals(dieOnError)) {

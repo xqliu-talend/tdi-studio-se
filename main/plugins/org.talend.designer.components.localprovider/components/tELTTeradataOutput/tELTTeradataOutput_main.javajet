@@ -149,6 +149,7 @@ if(useExistingConn) {
                            try{
                                conn_<%=cid%>.createStatement().execute("BEGIN QUERY LOGGING WITH SQL,OBJECTS ON " + <%= dbuser %>);
                            }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                  System.err.println(e.getMessage());
                            }
                         <%
@@ -165,6 +166,7 @@ if(useExistingConn) {
 %> "' FOR SESSION"
            );
               }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                e.printStackTrace();
       }
       conn_<%= cid %>.setAutoCommit(currentAutoCommitMode<%= cid %>);
@@ -273,6 +275,7 @@ String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%>+" (<%=insertCol
 try{
 	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery_<%=cid %>);
 } catch (Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	<%log4jCodeGenerateUtil.logInfo(node,"error",cid+" - Fail to create PreparedStatement with SQL: \"+insertQuery_"+ cid +"+\"");%>
 	throw e;
 }
@@ -288,6 +291,7 @@ String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" FROM (" + select_q
 try{
 	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
 } catch (Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	<%log4jCodeGenerateUtil.logInfo(node,"error",cid+" - Fail to create PreparedStatement with SQL: \"+updateQuery_"+ cid +"+\"");%>
 	throw e;
 }
@@ -305,6 +309,7 @@ String deleteQuery_<%=cid %> = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXIST
 try {
 	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>);
 } catch (Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	<%log4jCodeGenerateUtil.logInfo(node,"error",cid+" - Fail to create PreparedStatement with SQL: \"+deleteQuery_"+ cid +"+\"");%>
 	throw e;
 }
@@ -331,6 +336,7 @@ if(dbtable != null && columnList != null){
 			nb_line_inserted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 			<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
 		} catch (Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%log4jCodeGenerateUtil.logInfo(node,"error",cid+" - Fail to execute SQL: \"+insertQuery_"+ cid +"+\"");%>
 			throw e;
 		}
@@ -345,6 +351,7 @@ if(dbtable != null && columnList != null){
 			nb_line_updated_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 			<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
 		} catch (Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%log4jCodeGenerateUtil.logInfo(node,"error",cid+" - Fail to execute SQL: \"+updateQuery_"+ cid +"+\"");%>
 			throw e;
 		}
@@ -359,6 +366,7 @@ if(dbtable != null && columnList != null){
 			nb_line_deleted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 			<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
 		} catch (Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			<%log4jCodeGenerateUtil.logInfo(node,"error",cid+" - Fail to execute SQL: \"+deleteQuery_"+ cid +"+\"");%>
 			throw e;
 		}
@@ -384,12 +392,14 @@ if(!useExistingConn) {
                             try{
                                 conn_<%=cid%>.createStatement().execute("END QUERY LOGGING ON " + <%= dbuser %>);
                             }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                                   System.err.println(e.getMessage());
                             }
                          <%
                     }
                   %>
 		     }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		         e.printStackTrace();
 		     }
 	<%}%>

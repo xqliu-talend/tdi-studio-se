@@ -30,6 +30,7 @@ if((columnList != null && columnList.size() > 0) || "CLEAR".equals(tableAction) 
         try {
             callStmtLoadPending_<%=cid%>.execute();
         } catch (java.sql.SQLException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             //when table not in load pending mode will throw exception.
             //and do nothing.
             <%log4jCodeGenerateUtil.logError(node,"warn");%>
@@ -125,6 +126,7 @@ Character field_separator_<%=cid %> = (<%=field_separator%>).charAt(0);
 		        	log.info("<%=cid%> - " + rs2_<%=cid%>.getString(1)+":"+rs2_<%=cid%>.getString(2).replaceAll("\n",""));
 		        }
 			} catch (java.sql.SQLException sqle) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",sqle.getMessage());
 				log.error("<%=cid%> - Some errors occurred while executing the SQL to retrieve messages on server.");
 			}
         	<%
@@ -201,6 +203,7 @@ Character field_separator_<%=cid %> = (<%=field_separator%>).charAt(0);
 			        	log.info("<%=cid%> - " + rs2_<%=cid%>.getString(1)+":"+rs2_<%=cid%>.getString(2).replaceAll("\n",""));
 			        }
 			    } catch (java.sql.SQLException sqle) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",sqle.getMessage());
 					log.error("<%=cid%> - Some errors occurred while executing the SQL to retrieve messages on server.");
 				}
 	        	<%

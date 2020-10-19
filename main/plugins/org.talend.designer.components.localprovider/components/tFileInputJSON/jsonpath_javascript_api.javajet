@@ -31,6 +31,7 @@ List<IMetadataTable> metadatas = node.getMetadataList();
 	               jsonResultList.add(null); 
                }
           }catch(java.lang.Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				<%if(isLog4jEnabled){%>
 					log.error("<%=cid%> - " + e.getMessage());
 				<%}%>

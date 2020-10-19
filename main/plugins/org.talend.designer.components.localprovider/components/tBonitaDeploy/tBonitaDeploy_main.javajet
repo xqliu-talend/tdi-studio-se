@@ -44,6 +44,7 @@ imports="
 				System.out.println("**** Process "+ processId_<%=cid%> + " deploy successful ****");
 			
 			} catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
 			if (dieOnError) {
 %>
@@ -80,6 +81,7 @@ imports="
 		        
 		        System.out.println("**** Process "+ processId_<%=cid%> + " deploy successful ****");
 	        } catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
 			if (dieOnError) {
 %>
@@ -143,6 +145,7 @@ imports="
 		System.out.println("**** Process "+ processDefinitionUUID_<%=cid%> + " deploy successful ****");
 
 	} catch (javax.security.auth.login.LoginException le_<%=cid%>) {//just login exception
+globalMap.put("<%=cid%>_ERROR_MESSAGE",le_<%=cid%>.getMessage());
 <%
 	if (dieOnError) {
 %>

@@ -150,6 +150,7 @@ imports="
 	try {
 		fileContentEnCodeStr = java.util.Base64.getMimeEncoder().encodeToString(fileContent.getBytes("UTF-8"));
 	} catch (java.io.UnsupportedEncodingException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		e.printStackTrace();
 	}	
 %>
@@ -165,6 +166,7 @@ String originalFileContent_<%=cid %> = "";
 try {
     originalFileContent_<%=cid %> = new String(java.util.Base64.getMimeDecoder().decode(result_<%=cid %>.toString()), utf8Charset);
 } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
     e.printStackTrace();
 }
 

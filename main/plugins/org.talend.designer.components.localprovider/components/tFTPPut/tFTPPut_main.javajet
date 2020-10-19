@@ -171,6 +171,7 @@ try{
                     try{
                         c_<%=cid%>.rm(<%=remotedir %>+"/"+map<%=cid %>.get(key<%=cid %>));
                     }catch(com.jcraft.jsch.SftpException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                     }
                 <%
                 }
@@ -340,6 +341,7 @@ try{
         }
  <%}%>
     }catch(java.lang.Exception e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
         if (!ftps) {
 %>

@@ -47,6 +47,7 @@ try {
 	d_<%=cid%>.setDocument((org.dom4j.Document)handler_<%=cid%>.getDocument());
 
 } catch (org.milyn.SmooksException sE_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",sE_<%=cid%>.getMessage());
 <%
 	if ("true".equals(dieOnError)) {
 %>
@@ -101,6 +102,3 @@ if (conns!=null) {
 	}
 }
 %>
-
-
-

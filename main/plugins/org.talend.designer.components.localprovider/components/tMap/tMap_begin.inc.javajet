@@ -784,6 +784,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 	    if(hasAtLeastOneRead) {
 	    %>
         	} catch (IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	            throw new RuntimeException(e);
         <%
         }
@@ -793,6 +794,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 		if(hasAtLeastOneObjectType) {
 		%>
 			} catch(ClassNotFoundException eCNFE) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",eCNFE.getMessage());
 				 throw new RuntimeException(eCNFE);
 		<%
 		}
@@ -962,6 +964,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 	    if(hasAtLeastOneWrite) {
 	    %>
         	} catch (IOException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	            throw new RuntimeException(e);
         <%
         }

@@ -108,6 +108,7 @@ if (!useServiceAccountForConnection){
 		}
 	
 	}catch(java.lang.Exception e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%
 		if (("true").equals(dieOnError)) {
 		%>
@@ -195,6 +196,7 @@ if (!useServiceAccountForConnection){
 			credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
 					.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
 		} catch (IOException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			<%
 			if(isLog4jEnabled){
 			%>
@@ -258,6 +260,7 @@ if (!useServiceAccountForConnection){
 					writer_<%=cid%>.write(java.nio.ByteBuffer.wrap(buffer, 0, curFileLimit_<%=cid%>));
 				}
 			} catch (IOException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				<%
 				if(isLog4jEnabled){
 				%>
@@ -276,6 +279,7 @@ if (!useServiceAccountForConnection){
 				storage_<%=cid%>.create(blobInfo_<%=cid%>, java.nio.file.Files.readAllBytes(currentFile_<%=cid%>.getValue().toPath()));
 				nb_line_<%=cid%> ++;
 			} catch (IOException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				<%
 				if(isLog4jEnabled){
 				%>

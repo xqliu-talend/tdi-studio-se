@@ -83,6 +83,7 @@ if (!useServiceAccountForConnection){
 		}
 		%>
 	}catch(org.jets3t.service.ServiceException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 		<%
 		if (("true").equals(dieOnError)) {
 		%>
@@ -147,6 +148,7 @@ if (!useServiceAccountForConnection){
 			credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
 					.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
 		} catch (IOException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			<%
 			if(isLog4jEnabled){
 			%>

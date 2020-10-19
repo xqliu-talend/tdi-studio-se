@@ -159,6 +159,7 @@
 				else {
 					try { size = Integer.parseInt(patternSplit[i]); }
 					catch (java.lang.Exception e) { throw new java.lang.RuntimeException("'" + patternSplit[i] + "' is not a valid integer value  in the pattern: " + pattern); }
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					if (size <= 0) {
 						throw new java.lang.RuntimeException("'" + patternSplit[i] + "' is not a valid integer value  in the pattern: " + pattern);
 					}
@@ -449,6 +450,7 @@ String key_<%=schema.get("SCHEMA") %>_<%=schema.get("PARENT_ROW") %>_<%=cid %> =
 				}//assign key values end
 %>
 				} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 					<%=conn.getName()%> = null;
 <%
 					if (dieOnError) {

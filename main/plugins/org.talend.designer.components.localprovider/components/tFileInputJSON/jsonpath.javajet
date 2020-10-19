@@ -232,6 +232,7 @@ for(Object row_<%=cid%> : resultset_<%=cid%>) {
         			}
 %>
 				} catch (com.jayway.jsonpath.PathNotFoundException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 					<%=firstConnName %>.<%=column.getLabel() %> = <%@ include file="./set_default_value.javajet"%>;
 				}				
 <%

@@ -29,6 +29,7 @@ imports="
 				<%=cid%>_uploader_input.close();
 			} catch (IOException e)
 			{
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			}
 		}
 		if (<%=cid%>_uploader_output != null) {
@@ -36,6 +37,7 @@ imports="
 				<%=cid%>_uploader_output.close();
 			} catch (IOException e)
 			{
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			}
 		}
 	}

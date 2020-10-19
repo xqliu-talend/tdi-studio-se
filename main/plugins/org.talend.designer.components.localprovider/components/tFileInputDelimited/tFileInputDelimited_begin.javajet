@@ -291,6 +291,7 @@
     							}
     							%>
     							} catch(java.lang.Exception ex_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 									rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't parse value for column '%s' in '%s', value is '%s'. Details: %s",
 										"<%= column.getLabel() %>", "<%=targetConnName %>", temp, ex_<%=cid%>), ex_<%=cid%>));
 								}
@@ -313,6 +314,7 @@
 								try {
 									<%=targetConnName %>.<%=column.getLabel() %> = <%=defaultValue %>;
 								} catch(java.lang.Exception ex_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 									rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't set default value for column '%s' in '%s'. Details: %s",
 										"<%= column.getLabel() %>", "<%=targetConnName %>", ex_<%=cid%>), ex_<%=cid%>));
 								}
@@ -832,6 +834,7 @@
 									%>
 									
 										} catch(java.lang.Exception ex_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 											rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't parse value for column '%s' in '%s', value is '%s'. Details: %s",
 												"<%= column.getLabel() %>", "<%=targetConnName %>", <%=sourceValueName%>[columnIndexWithD_<%=cid%>], ex_<%=cid%>), ex_<%=cid%>));
 										}
@@ -851,6 +854,7 @@
 											try {
 												<%=targetConnName %>.<%=column.getLabel() %> = <%=defaultValue %>;
 											} catch(java.lang.Exception ex_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 												rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't set default value for column '%s' in '%s'. Details: %s",
 													"<%= column.getLabel() %>", "<%=targetConnName %>", ex_<%=cid%>), ex_<%=cid%>));
 											}
@@ -906,6 +910,7 @@
 							try {
 								<%=targetConnName %>.<%=column.getLabel() %> = <%=defaultValue %>;
 							} catch(java.lang.Exception ex_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 								rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't set default value for column '%s' in '%s'. %s",
 									"<%= column.getLabel() %>", "<%=targetConnName %>", ex_<%=cid%>), ex_<%=cid%>));
 							}

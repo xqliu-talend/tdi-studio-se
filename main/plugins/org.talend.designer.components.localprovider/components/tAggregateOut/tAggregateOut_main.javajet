@@ -258,6 +258,7 @@ if(inputConn != null) { // T_OutMain_AggR_501
 		try {
 			outputIsGeometry = outputJavaType == JavaTypesManager.getJavaTypeFromId("id_Geometry");
 		} catch (IllegalArgumentException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		}
 		boolean outputIsList = outputJavaType == JavaTypesManager.LIST;
 		boolean outputIsString = outputJavaType == JavaTypesManager.STRING;
@@ -274,6 +275,7 @@ if(inputConn != null) { // T_OutMain_AggR_501
 		try {
 			inputIsGeometry = inputJavaType == JavaTypesManager.getJavaTypeFromId("id_Geometry");
 		} catch (IllegalArgumentException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		}
 		boolean inputIsBoolean = inputJavaType == JavaTypesManager.BOOLEAN;
 		boolean inputIsList = inputJavaType == JavaTypesManager.LIST;
@@ -565,4 +567,3 @@ if(inputConn != null) { // T_OutMain_AggR_501
 } // T_OutMain_AggR_501
 
 %>
-

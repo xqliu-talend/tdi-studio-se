@@ -47,6 +47,7 @@
 				msgu_<%=cid%>.open();
 				resourceMap.put("msgu_<%=cid%>", msgu_<%=cid%>);
 			}catch(java.net.UnknownHostException ex_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex_<%=cid%>.getMessage());
 				<%
 				if(dieOnError){
 				%>

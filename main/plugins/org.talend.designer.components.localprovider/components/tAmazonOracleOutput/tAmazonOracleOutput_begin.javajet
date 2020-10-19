@@ -83,6 +83,7 @@ if (useSpatialOptions) {
 	  	targetSRID = Integer.parseInt(ElementParameterParser.getValue(node,"__SRID__"));
 	}
 	catch (NumberFormatException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 	%>
 	 	// TODO unable to parse integer: <%=ElementParameterParser.getValue(node,"__SRID__")%>
 	 	// TODO error: <%=e.getMessage()%>
@@ -485,6 +486,7 @@ if (xmlTypeExist || clobTypeExist) {
 				// Close the temporary CLOB
 				tempClob.close();
 			} catch( java.sql.SQLException sqlexp){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",sqlexp.getMessage());
 	  			<%dbLog.logPrintedException("sqlexp.getMessage()");%>
 				tempClob.freeTemporary();
 				sqlexp.printStackTrace();

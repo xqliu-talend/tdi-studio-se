@@ -161,6 +161,7 @@ String inputConnName = null;
 		    	commandLine = ProcessorUtilities.getMainCommand(process,version, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, codeOptions);  
 			}
 		} catch (ProcessorException e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 		}
 
 
@@ -663,6 +664,7 @@ String inputConnName = null;
 										reader.close();
 									}
 								} catch (java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 						            <%if(isLog4jEnabled){%>
 										log.error("<%=cid %> - " + ioe.getMessage());
 						            <%}%>
@@ -689,6 +691,7 @@ String inputConnName = null;
 										reader.close();
 									}
 								} catch (java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
 						            <%if(isLog4jEnabled){%>
 										log.error("<%=cid %> - " + ioe.getMessage());
 						            <%}%>
@@ -725,6 +728,7 @@ String inputConnName = null;
             normal_<%=cid %>.join();
             error_<%=cid %>.join();
         } catch (ThreadDeath tde) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",tde.getMessage());
             <%if(isLog4jEnabled){%>
             	log.error("<%=cid %> - thread was terminated.");
             <%}%>

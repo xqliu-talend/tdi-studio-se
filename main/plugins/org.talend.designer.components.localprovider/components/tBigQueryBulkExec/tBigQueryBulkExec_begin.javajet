@@ -94,6 +94,7 @@
 			properties_<%=cid%>.load(inputStream_<%=cid%>);
 			inputStream_<%=cid%>.close();
 		} catch (java.io.FileNotFoundException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 			<%
 			if(isLog4jEnabled){
 			%>
@@ -272,6 +273,7 @@
 				credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
 						.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
 			} catch (IOException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				<%
 				if (("true").equals(dieOnError)) {
 				%>
@@ -331,6 +333,7 @@
 			try {
 				bigqueryclient_<%=cid%>.tables().delete(PROJECT_ID_<%=cid%>, <%=dataset%>, <%=table%>).execute();
 			} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				if (e_<%=cid%>.getDetails().getCode() != 404) {
 					<%
 					if(dieOnError) {
@@ -358,6 +361,7 @@
 				com.google.api.services.bigquery.model.Table getTable = bigqueryclient_<%=cid%>.tables().get(PROJECT_ID_<%=cid%>, <%=dataset%>, <%=table%>).execute();
 				queryLoad_<%=cid%>.setCreateDisposition("CREATE_NEVER");
 			} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e_<%=cid%>){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 				if (e_<%=cid%>.getDetails().getCode() == 404) {
 					com.google.api.services.bigquery.model.TableSchema schema_<%=cid%> = new com.google.api.services.bigquery.model.TableSchema();
 					<%
@@ -521,6 +525,7 @@
 		try {
 			jobExec_<%=cid%> = insertReq_<%=cid%>.execute();
 		} catch (Exception ee_<%=cid%>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
 			<%
 			if(dieOnError) {
 			%>

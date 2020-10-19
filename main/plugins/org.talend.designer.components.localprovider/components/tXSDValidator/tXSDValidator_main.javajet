@@ -167,6 +167,7 @@ if("FLOW_MODE".equals(mode)){
 							validator<%=cid %>.setErrorHandler(errorHandler_<%=cid %>);
 						    validator<%=cid %>.validate(source<%=cid %>);
 						} catch (org.xml.sax.SAXParseException ex<%=cid %>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex<%=cid%>.getMessage());
 							errorHandler_<%=cid %>.error(ex<%=cid %>);
 						} catch (java.io.IOException ioEx<%=cid %>){
 							errorHandler_<%=cid %>.error(ioEx<%=cid %>);
@@ -273,6 +274,7 @@ try {
 	validator<%=cid %>.setErrorHandler(errorHandler_<%=cid %>);
     validator<%=cid %>.validate(source<%=cid %>);
 } catch (org.xml.sax.SAXParseException ex<%=cid %>) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ex<%=cid%>.getMessage());
 	errorHandler_<%=cid %>.error(ex<%=cid %>);
 } catch (java.io.IOException ioEx<%=cid %>){
 	errorHandler_<%=cid %>.error(ioEx<%=cid %>);

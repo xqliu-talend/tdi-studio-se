@@ -410,6 +410,7 @@ int deletedCount_<%=cid%> = 0;
            stmt_<%=cid %>.close();
        }
     }catch(Exception e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
         e.printStackTrace();
     }catch(java.lang.Error err){
         err.printStackTrace();

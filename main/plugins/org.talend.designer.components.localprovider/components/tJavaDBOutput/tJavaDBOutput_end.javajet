@@ -86,6 +86,7 @@ imports="
     	}
     	catch(java.sql.SQLException se)
     	{
+globalMap.put("<%=cid%>_ERROR_MESSAGE",se.getMessage());
             /*
                In embedded mode, an application should shut down Derby.
                If the application fails to shut down Derby explicitly,

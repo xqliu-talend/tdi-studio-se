@@ -60,6 +60,7 @@
                             reader.close();
                         }
                     } catch (java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
                         ioe.printStackTrace();
                     }
                 }
@@ -81,6 +82,7 @@
                             reader.close();
                         }
                     } catch (java.io.IOException ioe) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",ioe.getMessage());
                         ioe.printStackTrace();
                     }
                 }

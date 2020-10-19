@@ -193,6 +193,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 					log.info("<%=cid%> - Create table '" + tableName_<%=cid%> + "' has succeeded." );
 				<%}%>
 			}catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				if(<%=dieOnError%>){
 					throw new RuntimeException ("Table '" + tableName4Load_<%=cid%>  + "' already exists. process terminated.");
 				}else{
@@ -216,6 +217,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 					log.info("<%=cid%> - Create table '" + tableName_<%=cid%> + "' has succeeded." );
 				<%}%>
 			}catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 				if(<%=dieOnError%>){
 					 throw new RuntimeException ("Table '" + tableName4Load_<%=cid%>  + "' already exists. process terminated.");
 				}else{
@@ -264,6 +266,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 							log.info("<%=cid%> - Create table '" + tableName_<%=cid%> + "' has succeeded." );
 						<%}%> 
 					}catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 						if(<%=dieOnError%>){
 							 throw new RuntimeException ("Failure to create table '" + tableName4Load_<%=cid%>  + "'. process terminated.");
 						}else{
@@ -290,6 +293,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 							log.info("<%=cid%> - Drop table '" + tableName_<%=cid%> + "' has succeeded.");
 						<%}%>
                     }catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                     	if(<%=dieOnError%>){
 							 throw new RuntimeException ("Failure to drop table '" + tableName4Load_<%=cid%>  + "'. process terminated.");
                     	}else{
@@ -311,6 +315,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 					log.info("<%=cid%> - Create table '" + tableName_<%=cid%> + "' has succeeded." );
 				<%}%>           
                 }catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
                 	if(<%=dieOnError%>){
 						 throw new RuntimeException ("Failure to create table '" + tableName4Load_<%=cid%>  + "'. process terminated.");
                 	}else{
@@ -352,6 +357,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 				<%}%>
             	stmtClear_<%=cid%>.close();
             }catch(java.sql.SQLException e){
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
             	if(<%=dieOnError%>){
 					 throw new RuntimeException ("Failure to clear table '" + tableName4Load_<%=cid%>  + "'. process terminated.");
             	}else{

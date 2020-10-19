@@ -61,6 +61,7 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
         String smtpPort_<%=cid %> = "<%=smtpPort %>";
 <%
     } catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 %>
         String smtpPort_<%=cid %> = <%=smtpPort %>;
 <%

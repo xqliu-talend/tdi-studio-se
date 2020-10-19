@@ -1842,6 +1842,7 @@ if(!isVirtualOut) { // T_TM_M_320
 	if (!dieonerror) {
 %>
 		} catch (java.lang.Exception e) {
+globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			//if anohter java.lang.Exception when processing an java.lang.Exception
     		<%if(isLog4jEnabled){%>
     			log.error("<%=componentNameForKeyProblem%> - " + e.getMessage());
