@@ -699,33 +699,6 @@ public class ComponentsFactory implements IComponentsFactory {
         return file;
     }
 
-    private File getComponentsLocation(String folder, AbstractComponentsProvider provider) {
-        File file = null;
-        try {
-            if (provider != null) {
-                file = provider.getInstallationFolder();
-            } else {
-                String componentsPath = IComponentsFactory.COMPONENTS_LOCATION;
-                Bundle b = Platform.getBundle(componentsPath);
-                IBrandingService breaningService = (IBrandingService) GlobalServiceRegister.getDefault()
-                        .getService(IBrandingService.class);
-                if (breaningService.isPoweredOnlyCamel()) {
-                    componentsPath = IComponentsFactory.CAMEL_COMPONENTS_LOCATION;
-                }
-                URL url = FileLocator.find(b, new Path(folder), null);
-                if (url == null) {
-                    return null;
-                }
-                URL fileUrl = FileLocator.toFileURL(url);
-                file = new File(fileUrl.getPath());
-
-            }
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-        return file;
-    }
-
     private ResourceBundle getComponentResourceBundle(IComponent currentComp, String source, String cachedPathSource,
             AbstractComponentsProvider provider) {
         try {

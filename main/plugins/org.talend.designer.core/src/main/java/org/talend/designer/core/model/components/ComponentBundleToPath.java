@@ -20,16 +20,20 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.runtime.util.SharedStudioUtils;
 
 /**
  * created by nrousseau on Apr 3, 2013 Detailled comment
  *
  */
 public class ComponentBundleToPath {
-
+	public static final String SHARED_STUDIO_CUSTOME_COMPONENT_BUNDLE = "SharedStudioCustomComponent";
     private static Map<String, String> bundleIdToPath = new HashMap<String, String>();
 
     public static String getPathFromBundle(String bundle) {
+    	if (SHARED_STUDIO_CUSTOME_COMPONENT_BUNDLE.equals(bundle)) {
+    		return SharedStudioUtils.getSharedStudioComponentFolder().getAbsolutePath();
+    	}
         String applicationPath = bundleIdToPath.get(bundle);
         if (applicationPath == null) {
             try {
