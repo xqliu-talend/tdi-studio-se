@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.AbstractComponentsProvider;
-import org.talend.core.runtime.util.SharedStudioUtils;
+import org.talend.core.runtime.util.SharedStudioInfoProvider;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.codegen.i18n.Messages;
 
@@ -70,15 +70,9 @@ public final class ComponentsProviderManager {
                     try {
                         AbstractComponentsProvider componentsProvider = (AbstractComponentsProvider) configurationElement
                                 .createExecutableExtension("class"); //$NON-NLS-1$
-						if (!SharedStudioUtils.isSharedStudioMode()) {
-							if (componentsProvider instanceof SharedStudioSupportor) {
-								continue;
-							}								
-						} else {
-							if (!(componentsProvider instanceof SharedStudioSupportor)) {
-								continue;
-							}
-						}
+						if (componentsProvider instanceof SharedStudioInfoProvider && !((SharedStudioInfoProvider)componentsProvider).isSupportCurrentMode()) {
+							continue;
+						}		
                         componentsProvider.setId(id);
                         componentsProvider.setFolderName(folderName);
                         componentsProvider.setContributer(contributerName);

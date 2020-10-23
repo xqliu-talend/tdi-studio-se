@@ -27,24 +27,26 @@ import org.talend.core.runtime.util.SharedStudioUtils;
  *
  */
 public class ComponentBundleToPath {
-	public static final String SHARED_STUDIO_CUSTOME_COMPONENT_BUNDLE = "SharedStudioCustomComponent";
-    private static Map<String, String> bundleIdToPath = new HashMap<String, String>();
+	public static final String SHARED_STUDIO_CUSTOM_COMPONENT_BUNDLE = "SharedStudioCustomComponent";
+	private static Map<String, String> bundleIdToPath = new HashMap<String, String>();
 
-    public static String getPathFromBundle(String bundle) {
-    	if (SHARED_STUDIO_CUSTOME_COMPONENT_BUNDLE.equals(bundle)) {
-    		return SharedStudioUtils.getSharedStudioComponentFolder().getAbsolutePath();
-    	}
-        String applicationPath = bundleIdToPath.get(bundle);
-        if (applicationPath == null) {
-            try {
-                applicationPath = FileLocator.getBundleFile(Platform.getBundle(bundle)).getPath();
-                applicationPath = (new Path(applicationPath)).toPortableString();
-            } catch (IOException e2) {
-                ExceptionHandler.process(e2);
-                return null;
-            }
-            bundleIdToPath.put(bundle, applicationPath);
-        }
-        return applicationPath;
-    }
+	public static String getPathFromBundle(String bundle) {
+		String applicationPath = bundleIdToPath.get(bundle);
+		if (applicationPath == null) {
+			if (SHARED_STUDIO_CUSTOM_COMPONENT_BUNDLE.equals(bundle)) {
+				String absPath = SharedStudioUtils.getSharedStudioComponentFolder().getAbsolutePath();
+				applicationPath = (new Path(absPath)).toPortableString();
+			} else {
+				try {
+					applicationPath = FileLocator.getBundleFile(Platform.getBundle(bundle)).getPath();
+					applicationPath = (new Path(applicationPath)).toPortableString();
+				} catch (IOException e2) {
+					ExceptionHandler.process(e2);
+					return null;
+				}
+			}
+			bundleIdToPath.put(bundle, applicationPath);
+		}
+		return applicationPath;
+	}
 }

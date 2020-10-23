@@ -1,4 +1,4 @@
-package org.talend.designer.codegen.components.model;
+package org.talend.designer.components.exchange;
 //============================================================================
 //
 //Copyright (C) 2006-2019 Talend Inc. - www.talend.com
@@ -11,7 +11,6 @@ package org.talend.designer.codegen.components.model;
 //9 rue Pages 92150 Suresnes, France
 //
 //============================================================================
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -27,7 +26,7 @@ import org.talend.core.runtime.util.ComponentsLocationProvider;
 import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.designer.core.model.components.ComponentBundleToPath;
 
-public class SharedStudioUserComponentProvider extends UserComponentsProvider implements ComponentsLocationProvider{
+public class SharedStudioExchangeComponentsProvider extends ExchangeComponentsProvider implements ComponentsLocationProvider{
     @Override
     public File getInstallationFolder() throws IOException {
 		File componentFolder = SharedStudioUtils.getSharedStudioComponentFolder();
@@ -48,7 +47,7 @@ public class SharedStudioUserComponentProvider extends UserComponentsProvider im
     	}
     	return false;
     }
-    
+     
     @Override
     public ResourceBundle getResourceBundle(String label) {
     	URL configFolderUrl = Platform.getConfigurationLocation().getURL();
@@ -57,5 +56,4 @@ public class SharedStudioUserComponentProvider extends UserComponentsProvider im
     	                java.util.Locale.getDefault(), urlLoader );
     	return bundle;
     }
-
 }

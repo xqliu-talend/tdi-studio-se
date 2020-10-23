@@ -71,9 +71,9 @@
    <extension
          point="org.talend.core.components_provider">
       <ComponentsProvider
-            class="org.talend.designer.components.model.SharedStudioUserComponentProvider"
+            class="org.talend.designer.codegen.components.model.SharedStudioUserComponentProvider"
             folderName="user"
-            id="org.talend.designer.components.model.SharedStudioUserComponentProvider">
+            id="org.talend.designer.codegen.components.model.SharedStudioUserComponentProvider">
       </ComponentsProvider>
    </extension>
    <extension

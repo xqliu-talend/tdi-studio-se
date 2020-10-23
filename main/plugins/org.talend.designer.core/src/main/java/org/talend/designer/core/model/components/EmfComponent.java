@@ -99,11 +99,11 @@ import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.utils.SQLPatternUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.runtime.util.ComponentsLocationProvider;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.component.settings.ComponentsSettingsHelper;
 import org.talend.core.ui.services.IComponentsLocalProviderService;
-import org.talend.core.ui.utils.PluginUtil;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.ITisLocalProviderService;
 import org.talend.designer.core.i18n.Messages;
@@ -135,8 +135,6 @@ import org.talend.designer.core.model.utils.emf.component.TEMPLATEType;
 import org.talend.designer.core.model.utils.emf.component.impl.PLUGINDEPENDENCYTypeImpl;
 import org.talend.designer.core.model.utils.emf.component.util.ComponentResourceFactoryImpl;
 import org.talend.designer.core.ui.editor.nodes.Node;
-import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.designer.core.ui.editor.properties.controllers.ColumnListController;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.hadoop.distribution.ComponentType;
@@ -358,7 +356,9 @@ public class EmfComponent extends AbstractBasicComponent {
             String label = ComponentFilesNaming.getInstance().getBundleName(currentComp.getName(),
                     installPath.substring(installPath.lastIndexOf(IComponentsFactory.COMPONENTS_INNER_FOLDER)));
 
-            if (currentProvider.isUseLocalProvider()) {
+            if (currentProvider instanceof ComponentsLocationProvider) {
+            	return currentProvider.getResourceBundle(label);
+            } else if (currentProvider.isUseLocalProvider()) {
                 // if the component use local provider as storage (for user / ecosystem components)
                 // then get the bundle resource from the current main component provider.
 
