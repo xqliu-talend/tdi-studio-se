@@ -3644,14 +3644,8 @@ public class EmfComponent extends AbstractBasicComponent {
 
     private ArrayList<ECodePart> createCodePartList() {
         ArrayList<ECodePart> theCodePartList = new ArrayList<ECodePart>();
-        String applicationPath;
-        try {
-            applicationPath = FileLocator.getBundleFile(Platform.getBundle(bundleName)).getPath();
-            applicationPath = (new Path(applicationPath)).toPortableString();
-        } catch (IOException e2) {
-            ExceptionHandler.process(e2);
-            return (ArrayList<ECodePart>) Collections.EMPTY_LIST;
-        }
+        String applicationPath = ComponentBundleToPath.getPathFromBundle(bundleName);
+        applicationPath = (new Path(applicationPath)).toPortableString();
         File dirChildFile = new File(applicationPath + uriString);
         File dirFile = dirChildFile.getParentFile();
         final String extension = "." + LanguageManager.getCurrentLanguage().getName() + "jet"; //$NON-NLS-1$ //$NON-NLS-2$
