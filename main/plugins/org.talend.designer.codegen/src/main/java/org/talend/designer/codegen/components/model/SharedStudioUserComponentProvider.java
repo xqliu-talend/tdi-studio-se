@@ -30,7 +30,7 @@ import org.talend.designer.core.model.components.ComponentBundleToPath;
 public class SharedStudioUserComponentProvider extends UserComponentsProvider implements ComponentsLocationProvider{
     @Override
     public File getInstallationFolder() throws IOException {
-		File componentFolder = SharedStudioUtils.getSharedStudioComponentFolder();
+		File componentFolder = SharedStudioUtils.getSharedStudioComponentsParentFolder();
 		IPath path = new Path(IComponentsFactory.COMPONENTS_INNER_FOLDER);
         path = path.append(IComponentsFactory.EXTERNAL_COMPONENTS_INNER_FOLDER).append(ComponentUtilities.getExtFolder(getFolderName()));
         File installationFolder = new File (componentFolder, path.toOSString());

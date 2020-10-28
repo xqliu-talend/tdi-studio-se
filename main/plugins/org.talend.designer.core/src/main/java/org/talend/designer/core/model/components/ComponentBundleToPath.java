@@ -38,7 +38,7 @@ public class ComponentBundleToPath {
 		String applicationPath = bundleIdToPath.get(bundle);
 		if (applicationPath == null) {
 			if (SHARED_STUDIO_CUSTOM_COMPONENT_BUNDLE.equals(bundle)) {
-				String absPath = SharedStudioUtils.getSharedStudioComponentFolder().getAbsolutePath();
+				String absPath = SharedStudioUtils.getSharedStudioComponentsParentFolder().getAbsolutePath();
 				applicationPath = (new Path(absPath)).toPortableString();
 			} else {
 				try {
