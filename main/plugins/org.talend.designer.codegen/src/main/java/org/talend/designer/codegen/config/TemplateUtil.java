@@ -14,6 +14,7 @@ package org.talend.designer.codegen.config;
 
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
+import org.talend.designer.core.model.components.ComponentBundleToPath;
 
 /**
  * CodeGenerator Templates Ressources Utils.
@@ -160,11 +161,28 @@ public class TemplateUtil {
      * @param bundleName
      * @return
      */
-    public static String getPlatformUrlOfBundle(String bundleName) {
-        Bundle bundle = Platform.getBundle(bundleName);
-        if (bundle == null) {
-            return null;
-        }
-        return "platform:/plugin/" + bundle.getSymbolicName() + "_" + bundle.getVersion().toString() + "/";
+    public static String getPlatformUrlOfBundle(String bundleName, boolean withLastFileSeparator) {
+    	if (ComponentBundleToPath.SHARED_STUDIO_CUSTOM_COMPONENT_BUNDLE.equals(bundleName)) {
+    		String basePath = ComponentBundleToPath.getPathFromBundle(bundleName);
+    		if (!basePath.endsWith("/")) {
+    			basePath = basePath + "/";
+    		}
+    		return basePath;
+    	} else {
+            Bundle bundle = Platform.getBundle(bundleName);
+            if (bundle == null) {
+                return null;
+            }
+            
+            StringBuilder sb = new StringBuilder();
+            sb.append("platform:/plugin/");
+            sb.append(bundle.getSymbolicName());
+            sb.append("_");
+            sb.append(bundle.getVersion().toString());
+            if (withLastFileSeparator) {
+            	sb.append("/");
+            }     
+            return sb.toString();	
+    	}
     }
 }
