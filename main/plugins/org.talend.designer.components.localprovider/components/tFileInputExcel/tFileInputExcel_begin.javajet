@@ -1276,6 +1276,16 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         java.text.DecimalFormat df_<%=cid %> = new java.text.DecimalFormat("#.####################################");
         char decimalChar_<%=cid %> = df_<%=cid %>.getDecimalFormatSymbols().getDecimalSeparator();
 
+<%
+		for(int i=0; columnList!=null && i< columnList.size(); i++) {
+			if (columnList.get(i).getPattern() != null && columnList.get(i).getPattern().trim().length() != 0 && "id_Date".equals(columnList.get(i).getTalendType())) {
+%>
+	        excelReader_<%=cid%>.addDateFormat(<%=i%>,new java.text.SimpleDateFormat(<%=columnList.get(i).getPattern()%>));
+<%
+			}
+		}
+%>
+
 		if(source_<%=cid %> instanceof String){
 			excelReader_<%=cid%>.parse((String)source_<%=cid %>,<%=encoding %>, password_<%=cid%>);
 		} else if(source_<%=cid %> instanceof java.io.InputStream) {
