@@ -74,8 +74,6 @@ import org.talend.core.model.components.IComponentsHandler;
 import org.talend.core.model.components.filters.ComponentsFactoryProviderManager;
 import org.talend.core.model.components.filters.IComponentFactoryFilter;
 import org.talend.core.runtime.util.ComponentsLocationProvider;
-import org.talend.core.runtime.util.SharedStudioInfoProvider;
-import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.ISparkJobletProviderService;
 import org.talend.core.ui.ISparkStreamingJobletProviderService;
@@ -1010,6 +1008,14 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void setComponentsHandler(IComponentsHandler componentsHandler) {
         this.componentsHandler = componentsHandler;
+    }
+    
+    public String getCustomComponentBundlePath() {
+    	ComponentsProviderManager componentsProviderManager = ComponentsProviderManager.getInstance();
+    	AbstractComponentsProvider componentsProvider = componentsProviderManager.loadUserComponentsProvidersFromExtension();
+    	String bundle = componentsProvider.getComponentsBundle();
+    	return ComponentBundleToPath.getPathFromBundle(bundle);
+    	
     }
 
 }
