@@ -108,7 +108,7 @@ public class ExcelReader implements Callable {
         }
     }
 
-    public void addDataFormat(String column, DateFormat dateFormat) {
+    public void addDateFormat(String column, DateFormat dateFormat) {
         this.customDateFormats.put(column, dateFormat);
     }
 
