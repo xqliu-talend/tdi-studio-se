@@ -62,7 +62,7 @@ public class ExcelReader implements Callable {
 
     private List<Boolean> asRegexs = new ArrayList<Boolean>();
 
-    private Map<String, DateFormat> customDateFormats = new HashMap<>();
+    private final Map<Integer, DateFormat> columnDateFormats = new HashMap<>();
 
     DefaultTalendSheetContentsHandler sheetContentsHandler = null;
 
@@ -108,8 +108,8 @@ public class ExcelReader implements Callable {
         }
     }
 
-    public void addDateFormat(String column, DateFormat dateFormat) {
-        this.customDateFormats.put(column, dateFormat);
+    public void addDateFormat(Integer columnIndex, DateFormat dateFormat) {
+        this.columnDateFormats.put(columnIndex, dateFormat);
     }
 
     public void stopRead() {
@@ -166,7 +166,7 @@ public class ExcelReader implements Callable {
 
             XMLReader parser = XMLReaderFactory.createXMLReader();
             ContentHandler handler = new TalendXSSFSheetXMLHandler(styles, strings, sheetContentsHandler, formatter,
-                    formulasNotResults, customDateFormats);
+                    formulasNotResults, columnDateFormats);
             parser.setContentHandler(handler);
 
             XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) r.getSheetsData();

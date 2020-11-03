@@ -32,7 +32,11 @@ import java.util.Map;
 public class TalendXSSFSheetXMLHandler extends XSSFSheetXMLHandler {
 
     private final TalendSheetContentsHandler output;
-    private final Map<String, DateFormat> customDateFormats;
+    /**
+     * put here date pattern for studio\talend columns
+     * we pass it to parser and during the date parse parser will use them instead of internal one
+     */
+    private final Map<Integer, DateFormat> columnDateFormats;
     private final StylesTable stylesTable;
     private final DataFormatter formatter;
 
@@ -43,12 +47,12 @@ public class TalendXSSFSheetXMLHandler extends XSSFSheetXMLHandler {
 
     public TalendXSSFSheetXMLHandler(StylesTable styles, ReadOnlySharedStringsTable strings,
             TalendSheetContentsHandler sheetContentsHandler, DataFormatter dataFormatter, boolean formulasNotResults,
-            Map<String, DateFormat> customDateFormats) {
+            Map<Integer, DateFormat> columnDateFormats) {
         super(styles, strings, sheetContentsHandler, dataFormatter, formulasNotResults);
         this.output = sheetContentsHandler;
         this.stylesTable = styles;
         this.formatter = dataFormatter;
-        this.customDateFormats = customDateFormats;
+        this.columnDateFormats = columnDateFormats;
     }
 
     public interface TalendSheetContentsHandler extends SheetContentsHandler {
@@ -67,12 +71,16 @@ public class TalendXSSFSheetXMLHandler extends XSSFSheetXMLHandler {
         }
     }
 
+    /**
+     * find the Date (Talend) column and set custom dateformat from the Studio into event parser
+     */
     private void swapExcelDateFormatOnTalendIfNeed(Attributes attributes) {
         if (stylesTable == null) {
             return;
         }
 
-        String columnName = attributes.getValue("r").replaceAll("[0-9]", "");
+        // calculate the index of column
+        Integer columnIndex = ColumnUtil.calculateIndexOfColumn(attributes.getValue("r"));
         String cellStyleStr = attributes.getValue("s");
         String cellType = attributes.getValue("t");
 
@@ -91,7 +99,7 @@ public class TalendXSSFSheetXMLHandler extends XSSFSheetXMLHandler {
                 formatString = BuiltinFormats.getBuiltinFormat(formatIndex);
             }
 
-            DateFormat format = customDateFormats.get(columnName);
+            DateFormat format = columnDateFormats.get(columnIndex);
             if (formatString != null && (cellType == null)
                     && DateUtil.isADateFormat(formatIndex, formatString) && format != null) {
                 lastChangedFormatString = formatString;
