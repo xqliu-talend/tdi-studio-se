@@ -1278,9 +1278,10 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 
 <%
 		for(int i=0; columnList!=null && i< columnList.size(); i++) {
-			if (columnList.get(i).getPattern() != null && columnList.get(i).getPattern().trim().length() != 0 && "id_Date".equals(columnList.get(i).getTalendType())) {
+			if ("id_Date".equals(columnList.get(i).getTalendType())) {
+		       // it's input component. we should avoid data rounding here. for dynamic schema we have another algo
 %>
-	        excelReader_<%=cid%>.addDateFormat(<%=i%>,new java.text.SimpleDateFormat(<%=columnList.get(i).getPattern()%>));
+		excelReader_<%=cid%>.addDateFormat(<%=i%>,new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 <%
 			}
 		}
@@ -1392,7 +1393,8 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 						IMetadataColumn column = listColumns.get(i);
 						String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
 						JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
-						String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
+						// it's input component. we should avoid data rounding here. it would be nice to avoid transformation from date to string and back
+						String patternValue = "\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\"";
 						if(metadata.isDynamicSchema()){
 						%>
 							columnIndex_<%=cid%> = <%=i-1%>+dynamic_column_count_<%=cid%>;
