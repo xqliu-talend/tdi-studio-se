@@ -225,7 +225,7 @@
 
 		com.google.api.client.auth.oauth2.Credential cred_<%=cid%> =
 		new com.google.api.client.auth.oauth2.Credential(com.google.api.client.auth.oauth2.BearerToken.authorizationHeaderAccessMethod()).setFromTokenResponse(
-			(new com.google.api.client.auth.oauth2.TokenResponse()).setAccessToken(decryptedAccessToken_<%=cid%>) );
+			(new com.google.api.client.auth.oauth2.TokenResponse()).setAccessToken(decryptedAccessToken_<%=cid%>));
 
 		com.google.api.services.bigquery.Bigquery bigqueryclient_<%=cid%> = null;
 		long nb_line_<%=cid%> = 0;
@@ -289,46 +289,11 @@
 			<%
 			}
 		} else {
-%>
-			com.google.cloud.storage.Storage storage_<%=cid%> = null;
-<%
-      if("GS_SERVICE_ACCOUNT".equals(authType)) {
-				String pathToServerAccoutKeyFile = ElementParameterParser.getValue(node, "__GS_SERVICE_ACCOUNT_KEY__");
-%>
-			/* ----START-UPLOADING-FILE WITH SERVICE ACCOUNT---- */
-			com.google.auth.Credentials credential_<%=cid%> = null;
-			try {
-				credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
-						.fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
-			} catch (IOException e_<%=cid%>) {
-				<%
-				if (("true").equals(dieOnError)) {
-				%>
-					throw(e_<%=cid%>);
-				<%
-				}
-				%>
-				<%
-				if(isLog4jEnabled){
-				%>
-					log.error("<%=cid%> - Exception in component <%=cid%>.", e_<%=cid%>);
-				<%
-				}
-				%>
-			}
-      <% } else {
-            if (ElementParameterParser.canEncrypt(node, "__GS_ACCESS_TOKEN__")) {%>
-			final String decryptedAccessTokenGS_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, "__GS_ACCESS_TOKEN__")%>);
-          <%} else {%>
-			final String decryptedAccessTokenGS_<%=cid%> = <%= ElementParameterParser.getValue(node, "__GS_ACCESS_TOKEN__")%>;
-          <%}%>
-			/* ----START-UPLOADING-FILE WITH OAUTH TOKEN ---- */
-			com.google.auth.Credentials credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials.create(
-				new com.google.auth.oauth2.AccessToken(decryptedAccessTokenGS_<%=cid%>, new Date(Long.MAX_VALUE)));
-
-      <%}%>
-			com.google.cloud.storage.StorageOptions.Builder builder = com.google.cloud.storage.StorageOptions.newBuilder();
-			storage_<%=cid%> = builder.setCredentials(credential_<%=cid%>).build().getService();
+      boolean useExistingConn = false;
+      String gsProjectID = projectId;
+      String connection = cid;
+      %>
+      <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/googleStorageConnection.javajet"%>
 
 			java.io.File file_<%=cid%> = new java.io.File(<%=localFilename%>);
 
