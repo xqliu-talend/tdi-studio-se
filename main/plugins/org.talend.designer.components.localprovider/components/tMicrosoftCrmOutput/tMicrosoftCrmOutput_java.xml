@@ -38649,23 +38649,23 @@
                 MVN="mvn:org.talend.libraries/oauth2-oidc-sdk-4.5/6.4.0"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="odata-client-core-4.7.1"
-                MODULE="odata-client-core-4.7.1.jar"
+                NAME="odata-client-core"
+                MODULE="odata-client-core.jar"
                 MVN="mvn:org.apache.olingo/odata-client-core/4.7.1"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="odata-client-api-4.7.1"
-                MODULE="odata-client-api-4.7.1.jar"
+                NAME="odata-client-api"
+                MODULE="odata-client-api.jar"
                 MVN="mvn:org.apache.olingo/odata-client-api/4.7.1"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="odata-commons-api-4.7.1"
-                MODULE="odata-commons-api-4.7.1.jar"
+                NAME="odata-commons-api"
+                MODULE="odata-commons-api.jar"
                 MVN="mvn:org.apache.olingo/odata-commons-api/4.7.1"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="odata-commons-core-4.7.1"
-                MODULE="odata-commons-core-4.7.1.jar"
+                NAME="odata-commons-core"
+                MODULE="odata-commons-core.jar"
                 MVN="mvn:org.apache.olingo/odata-commons-core/4.7.1"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
