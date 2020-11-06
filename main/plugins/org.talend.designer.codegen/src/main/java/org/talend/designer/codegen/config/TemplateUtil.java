@@ -179,7 +179,7 @@ public class TemplateUtil {
             sb.append(bundle.getSymbolicName());
             sb.append("_");
             sb.append(bundle.getVersion().toString());
-            sb.append("/");    
+            sb.append("/");   
             return sb.toString();	
     	}
     }
