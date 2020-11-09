@@ -31,20 +31,18 @@ try {
       final String decryptedAccessTokenGS_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, "__GS_ACCESS_TOKEN__")%>);
       com.google.auth.Credentials credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials.create(
               new com.google.auth.oauth2.AccessToken(decryptedAccessTokenGS_<%=cid%>, new Date(Long.MAX_VALUE)));
+      <%} else {%>
+      class ReinitializeAccessTokenCredentials_<%=cid%> extends com.google.auth.oauth2.GoogleCredentials {
+            ReinitializeAccessTokenCredentials_<%=cid%> (com.google.auth.oauth2.AccessToken accessToken) {
+              super(accessToken);
+            }
+            public com.google.auth.oauth2.AccessToken refreshAccessToken() throws IOException {
+                return new com.google.auth.oauth2.AccessToken(<%= ElementParameterParser.getValue(node, "__GS_ACCESS_TOKEN__")%>, new Date(Long.MAX_VALUE));
+            }
+      }
+      com.google.auth.Credentials credential_<%=cid%> = new ReinitializeAccessTokenCredentials_<%=cid%>(new com.google.auth.oauth2.AccessToken(<%= ElementParameterParser.getValue(node, "__GS_ACCESS_TOKEN__")%>, new Date(Long.MAX_VALUE)));
+      <%}%>
       com.google.cloud.storage.Storage storage_<%=cid%> = com.google.cloud.storage.StorageOptions.newBuilder().setCredentials(credential_<%=cid%>)
             .setProjectId(<%=gsProjectID%>).build().getService();
-      <%} else {%>
-      com.google.cloud.storage.Storage storage_<%=cid%> = (com.google.cloud.storage.Storage) java.lang.reflect.Proxy.newProxyInstance(com.google.cloud.storage.Storage.class.getClassLoader(),
-                new Class[] { com.google.cloud.storage.Storage.class },
-                new java.lang.reflect.InvocationHandler() {
-                    public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args) throws Throwable {
-                        com.google.auth.Credentials credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials.create(
-                                new com.google.auth.oauth2.AccessToken(<%= ElementParameterParser.getValue(node, "__GS_ACCESS_TOKEN__")%>, new Date(Long.MAX_VALUE)));
-                        com.google.cloud.storage.Storage storage_<%=cid%> = com.google.cloud.storage.StorageOptions.newBuilder().setCredentials(credential_<%=cid%>)
-                              .setProjectId(<%=gsProjectID%>).build().getService();
-                        return method.invoke(storage_<%=cid%>, args);
-                    }
-                });
       <%}
-    }
-} %>
+}%>

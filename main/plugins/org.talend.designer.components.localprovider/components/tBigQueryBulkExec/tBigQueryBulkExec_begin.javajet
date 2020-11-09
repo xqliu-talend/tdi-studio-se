@@ -241,7 +241,7 @@
 	/* ----END-CREATING-CLIENT (OAuth based Token)---- */
 	<%
 	} else {
-		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\" or \"TOKEN\", but it is " + authMode);
+		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
 	}
 	boolean bulkFileAlreadyExists = ElementParameterParser.getBooleanValue(node, "__BULK_FILE_ALREADY_EXIST__");
 	String accessKey = ElementParameterParser.getValue(node, "__GS_ACCESS_KEY__");
@@ -336,7 +336,7 @@
 		<%if (dropTable) {%>
 			try {
 				<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
-				cred_<%=cid%>.setAccessToken(decryptedAccessToken_<%=cid%>);
+				cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
 				<% } %>
 				bigqueryclient_<%=cid%>.tables().delete(PROJECT_ID_<%=cid%>, <%=dataset%>, <%=table%>).execute();
 			} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e_<%=cid%>) {
@@ -365,7 +365,7 @@
 
 			try {
 				<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
-				cred_<%=cid%>.setAccessToken(decryptedAccessToken_<%=cid%>);
+				cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
 				<% } %>
 				com.google.api.services.bigquery.model.Table getTable = bigqueryclient_<%=cid%>.tables().get(PROJECT_ID_<%=cid%>, <%=dataset%>, <%=table%>).execute();
 				queryLoad_<%=cid%>.setCreateDisposition("CREATE_NEVER");
@@ -517,7 +517,9 @@
 		config_<%=cid%>.setLoad(queryLoad_<%=cid%>);
 
 		job_<%=cid%>.setConfiguration(config_<%=cid%>);
-
+    <% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+    cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+    <% } %>
 		com.google.api.services.bigquery.Bigquery.Jobs.Insert insertReq_<%=cid%> = bigqueryclient_<%=cid%>.jobs().insert("", job_<%=cid%>);
 		insertReq_<%=cid%>.setProjectId(PROJECT_ID_<%=cid%>);
 		<%
@@ -535,7 +537,7 @@
 		com.google.api.services.bigquery.model.Job jobExec_<%=cid%> = null;
 		try {
 			<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
-      cred_<%=cid%>.setAccessToken(decryptedAccessToken_<%=cid%>);
+      cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
       <% } %>
 			jobExec_<%=cid%> = insertReq_<%=cid%>.execute();
 		} catch (Exception ee_<%=cid%>) {
@@ -559,13 +561,13 @@
 		if (jobExec_<%=cid%>.getStatus().getState().equals("RUNNING")
 				|| jobExec_<%=cid%>.getStatus().getState().equals("PENDING")) {
 					<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
-			cred_<%=cid%>.setAccessToken(decryptedAccessToken_<%=cid%>);
+			cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
 					<% } %>
 			com.google.api.services.bigquery.model.Job pollJob_<%=cid%> = bigqueryclient_<%=cid%>.jobs().get(PROJECT_ID_<%=cid%>,jobExec_<%=cid%>.getJobReference().getJobId()).setLocation(jobExec_<%=cid%>.getJobReference().getLocation()).execute();
 			while (pollJob_<%=cid%>.getStatus().getState().equals("RUNNING") || pollJob_<%=cid%>.getStatus().getState().equals("PENDING")) {
 				Thread.sleep(1000);
 				<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
-				cred_<%=cid%>.setAccessToken(decryptedAccessToken_<%=cid%>);
+				cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
 				<% } %>
 				pollJob_<%=cid%> = bigqueryclient_<%=cid%>.jobs().get(PROJECT_ID_<%=cid%>,jobExec_<%=cid%>.getJobReference().getJobId()).setLocation(jobExec_<%=cid%>.getJobReference().getLocation()).execute();
 				System.out.println(String.format(
@@ -582,7 +584,7 @@
 			}
 
 			<% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
-      cred_<%=cid%>.setAccessToken(decryptedAccessToken_<%=cid%>);
+      cred_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
       <% } %>
 			com.google.api.services.bigquery.model.Job doneJob_<%=cid%> = pollJob_<%=cid%>;
 
@@ -826,6 +828,6 @@
 		/* ----END-CREATING-JOB (Cloud API)---- */
 	<%
 	} else {
-		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\" or \"TOKEN\", but it is " + authMode);
+		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
 	}
 	%>

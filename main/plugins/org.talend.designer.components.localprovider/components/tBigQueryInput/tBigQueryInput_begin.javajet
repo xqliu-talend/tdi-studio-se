@@ -228,11 +228,12 @@
 			log.debug("<%=cid%> - Running Query: "+querySql_<%=cid %>);
 		<%
 		}
-		%>
+		if (authMode.equals("OAUTH")) { %>
+       BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, tokenFile_<%=cid%><% if (isCustomTemporaryName) {%>, <%=tempDataset%> <%} %>);
+    <%} else {%>
+       BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, null, <% if (isCustomTemporaryName) {%><%=tempDataset%> <%} else {%>null<% } %>, credential_<%=cid%>);
+    <%}
 
-		BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, <% if (authMode.equals("OAUTH")) { %> tokenFile_<%=cid%> <% } else { %> null <%} if (isCustomTemporaryName) {%>, <%=tempDataset%> <%} %>);
-
-		<%
 		if(isLog4jEnabled){
 		%>
 			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> the allowLargeResults flag");
@@ -256,6 +257,9 @@
 		%>
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Input/BigQuery/BigQueryHelper_Oauth.javajet"%>
 		BigQueryHelper_<%=cid%> helper_<%=cid%> = new BigQueryHelper_<%=cid%>();
+    <% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+    credential_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+    <% } %>
 		com.google.api.services.bigquery.model.TableSchema schema_<%=cid%> = bigqueryclient_<%=cid%>
 						.jobs().getQueryResults(PROJECT_ID_<%=cid%>, insert_<%=cid%>.getJobReference().getJobId()).execute().getSchema();
 		routines.system.Dynamic dcg_<%=cid%> =  new routines.system.Dynamic();
@@ -427,7 +431,7 @@
 		long nb_line_<%=cid%> = 0;
 	<%
 	} else {
-		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\" or \"TOKEN\", but it is " + authMode);
+		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
 	}
 
 
@@ -435,6 +439,9 @@
 	%>
 	while (true) {
 		// Fetch Results
+    <% if(authMode.equals("TOKEN") && !ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) { %>
+    credential_<%=cid%>.setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>);
+    <% } %>
 		com.google.api.services.bigquery.model.TableDataList dataList_<%=cid %> = bigqueryclient_<%=cid%>.tabledata()
 					.list(PROJECT_ID_<%=cid %>,
 							insert_<%=cid %>.getConfiguration().getQuery()
@@ -461,7 +468,7 @@
 			nb_line_<%=cid%> ++;
 	<%
 	} else {
-		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\" or \"TOKEN\", but it is " + authMode);
+		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
 	}
 		%>
 		int fieldsCount_<%=cid %> = field_<%=cid %>.size();
@@ -518,7 +525,7 @@
 								value_<%=cid%> = field_<%=cid %>.get(column_index_<%=cid%>).getValue();
 								<%
 								} else {
-									throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\" or \"TOKEN\", but it is " + authMode);
+									throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\", \"OAUTH\" or \"TOKEN\", but it is " + authMode);
 								}
 								%>
 								if(com.google.api.client.util.Data.isNull(value_<%=cid%>)) value_<%=cid%> = null;
