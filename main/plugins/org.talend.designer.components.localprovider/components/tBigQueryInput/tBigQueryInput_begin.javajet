@@ -208,13 +208,15 @@
 
   if (ElementParameterParser.canEncrypt(node, "__ACCESS_TOKEN__")) {%>
      final String decryptedAccessToken_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, "__ACCESS_TOKEN__")%>);
-  <%} else {%>
-     final String decryptedAccessToken_<%=cid%> = <%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>;
-  <%}%>
-		credential_<%=cid%> =
+     credential_<%=cid%> =
 			new com.google.api.client.auth.oauth2.Credential(com.google.api.client.auth.oauth2.BearerToken.authorizationHeaderAccessMethod()).setFromTokenResponse(
 				(new com.google.api.client.auth.oauth2.TokenResponse()).setAccessToken(decryptedAccessToken_<%=cid%>));
-<% } %>
+  <%} else {%>
+     credential_<%=cid%> =
+			new com.google.api.client.auth.oauth2.Credential(com.google.api.client.auth.oauth2.BearerToken.authorizationHeaderAccessMethod()).setFromTokenResponse(
+				(new com.google.api.client.auth.oauth2.TokenResponse()).setAccessToken(<%= ElementParameterParser.getValue(node, "__ACCESS_TOKEN__")%>));
+  <%}
+} %>
 		bigqueryclient_<%=cid%> = new com.google.api.services.bigquery.Bigquery.Builder(TRANSPORT_<%=cid %>, JSON_FACTORY_<%=cid %>,credential_<%=cid%>).setApplicationName("Talend").build();
 
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/tBigQueryInput/BigQueryInputQueryHelper.javajet"%>
