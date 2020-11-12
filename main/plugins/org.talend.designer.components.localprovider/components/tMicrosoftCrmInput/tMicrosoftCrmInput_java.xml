@@ -27881,22 +27881,22 @@
                 MVN="mvn:org.talend.libraries/oauth2-oidc-sdk-4.5/6.4.0"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
-                NAME="odata-client-core"
+                NAME="odata-client-core-4.7.1"
                 MODULE="odata-client-core-4.7.1.jar"
                 MVN="mvn:org.apache.olingo/odata-client-core/4.7.1"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
-                NAME="odata-client-api"
+                NAME="odata-client-api-4.7.1"
                 MODULE="odata-client-api-4.7.1.jar"
                 MVN="mvn:org.apache.olingo/odata-client-api/4.7.1"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
-                NAME="odata-commons-api"
+                NAME="odata-commons-api-4.7.1"
                 MODULE="odata-commons-api-4.7.1.jar"
                 MVN="mvn:org.apache.olingo/odata-commons-api/4.7.1"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
             <IMPORT
-                NAME="odata-commons-core"
+                NAME="odata-commons-core-4.7.1"
                 MODULE="odata-commons-core-4.7.1.jar"
                 MVN="mvn:org.apache.olingo/odata-commons-core/4.7.1"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018')))" />
