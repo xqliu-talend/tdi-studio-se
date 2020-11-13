@@ -19,6 +19,7 @@ import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
@@ -141,24 +142,42 @@ public class ChangeConnTextCommand extends Command {
         // schema/default table , it won't work.
         if (iNode != null && iNode.isELTComponent()) {
             boolean update = false;
-            String defaultTableName = null;
             String defaultSchemaName = null;
+            String defaultTableName = null;
             if (StringUtils.isNotBlank(newName)) {
-                String[] names = newName.split("\\."); //$NON-NLS-1$
-                if (names.length == 2) {
-                    defaultTableName = names[1];
-                    defaultSchemaName = names[0];
-                    update = true;
+                String newNameTemp = newName;
+                int newNameLength = newNameTemp.length();
+                // Name cases:context.a.context.b /context.a.b /a.context.b /a.b /b
+                if (ContextParameterUtils.isContainContextParam(newNameTemp)) {
+                    if (newNameTemp.startsWith(ContextParameterUtils.JAVA_NEW_CONTEXT_PREFIX)) {
+                        int index = newNameTemp.indexOf(".", //$NON-NLS-1$
+                                ContextParameterUtils.JAVA_NEW_CONTEXT_PREFIX.length());
+                        defaultSchemaName = newNameTemp.substring(0, index);
+                        defaultTableName = newNameTemp.substring(index + 1, newNameLength);
+                        update = true;
+                    } else {
+                        int index = newNameTemp.indexOf(".");//$NON-NLS-1$
+                        defaultSchemaName = newNameTemp.substring(0, index);
+                        defaultTableName = newNameTemp.substring(index + 1, newNameLength);
+                        update = true;
+                    }
+                } else {
+                    String[] names = newNameTemp.split("\\.");//$NON-NLS-1$
+                    if (names.length == 2) {
+                        defaultSchemaName = names[0];
+                        defaultTableName = names[1];
+                        update = true;
+                    }
                 }
             }
             if (update) {
-                IElementParameter tableParam = iNode.getElementParameter("ELT_TABLE_NAME"); //$NON-NLS-1$
                 IElementParameter schemaParam = iNode.getElementParameter("ELT_SCHEMA_NAME");//$NON-NLS-1$
-                if (tableParam != null && StringUtils.isNotBlank(defaultTableName)) {
-                    tableParam.setValue(TalendTextUtils.addQuotes(defaultTableName));
-                }
+                IElementParameter tableParam = iNode.getElementParameter("ELT_TABLE_NAME"); //$NON-NLS-1$
                 if (schemaParam != null && StringUtils.isNotBlank(defaultSchemaName)) {
                     schemaParam.setValue(TalendTextUtils.addQuotes(defaultSchemaName));
+                }
+                if (tableParam != null && StringUtils.isNotBlank(defaultTableName)) {
+                    tableParam.setValue(TalendTextUtils.addQuotes(defaultTableName));
                 }
             }
         }
