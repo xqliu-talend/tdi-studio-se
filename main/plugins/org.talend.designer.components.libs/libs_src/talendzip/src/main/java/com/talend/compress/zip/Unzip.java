@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
+import net.lingala.zip4j.model.UnzipParameters;
 
 public class Unzip {
 
@@ -44,6 +45,8 @@ public class Unzip {
         this.useZip4jDecryption = useZip4jDecryption;
 	}
 
+	public void setEncording(String encording){this.encording = encording;}
+
 	private boolean needPassword = false;
     private boolean useZip4jDecryption = false;
 
@@ -55,6 +58,8 @@ public class Unzip {
 
 	private String sourceZip;
 	private String targetDir;
+	private String encording = "UTF-8";
+
 
 	public Unzip(String sourceZip, String targetDir) {
 		this.sourceZip = sourceZip;
@@ -154,7 +159,7 @@ public class Unzip {
 							javax.crypto.Cipher.DECRYPT_MODE, password));
 
 			org.apache.commons.compress.archivers.zip.ZipArchiveInputStream input = new org.apache.commons.compress.archivers.zip.ZipArchiveInputStream(
-					new java.io.BufferedInputStream(is));
+					new java.io.BufferedInputStream(is),encording);
 			org.apache.commons.compress.archivers.zip.ZipArchiveEntry entry;
 
 			while ((entry = input.getNextZipEntry()) != null) {
@@ -190,7 +195,7 @@ public class Unzip {
 		org.apache.commons.compress.archivers.zip.ZipFile zip = null;
 		try {
 			zip = new org.apache.commons.compress.archivers.zip.ZipFile(
-					sourceZip);
+					sourceZip,encording);
 			java.util.Enumeration enuFiles = zip.getEntries();
 			java.io.InputStream is = null;
 

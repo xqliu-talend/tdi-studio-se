@@ -74,7 +74,6 @@
      >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
-
   </PARAMETERS>
 
   <ADVANCED_PARAMETERS>
@@ -82,6 +81,15 @@
             NUM_ROW="2">
             <DEFAULT>false</DEFAULT>
         </PARAMETER>
+		<PARAMETER NAME="USE_ENCODING" FIELD="CHECK" REQUIRED="true" NUM_ROW="5">
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+		<PARAMETER NUM_ROW="5" FIELD="TEXT" NAME="ENCORDING" SHOW_IF="USE_ENCODING == 'true'">
+            <DEFAULT>"UTF-8"</DEFAULT>
+        </PARAMETER>
+
+</PARAMETER>
+
   </ADVANCED_PARAMETERS>
 
    <CODEGENERATION>
