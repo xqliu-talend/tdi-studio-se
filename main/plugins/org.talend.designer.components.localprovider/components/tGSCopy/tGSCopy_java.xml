@@ -189,6 +189,7 @@
 			<PARAMETER
 				NAME="USE_SRC_PATH"
 				FIELD="CHECK"
+				NUM_ROW="10"
 			>
 				<DEFAULT>true</DEFAULT>
 			</PARAMETER>
