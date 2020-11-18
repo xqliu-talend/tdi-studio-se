@@ -240,7 +240,8 @@ public class TalendCompletionProposalComputer implements IJavaCompletionProposal
         message += Messages.getString("ContextParameterProposal.VariableName"); //$NON-NLS-1$
 
         MessageFormat format = new MessageFormat(message);
-        Object[] args = new Object[] { desc, contextParameter.getType(), getContextContent(contextParameter) };
+        Object[] args = new Object[] { desc, contextParameter.getContext().getName(), contextParameter.getType(),
+                contextParameter.getValue() };
         return format.format(args);
     }
 
