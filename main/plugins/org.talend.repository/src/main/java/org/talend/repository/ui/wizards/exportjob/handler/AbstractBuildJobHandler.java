@@ -209,7 +209,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
 
         // If the map doesn't contain the assembly key, then take the default value activation from the POM.
         boolean isAssemblyNeeded = (exportChoice.get(ExportChoice.needAssembly) == null
-                || isOptionChoosed(ExportChoice.needAssembly)) && !isOptionChoosed(ExportChoice.buildImage);
+                || isOptionChoosed(ExportChoice.needAssembly));
         addArg(profileBuffer, isAssemblyNeeded, TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY);
 
         // rules
