@@ -23,21 +23,28 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import java.text.DateFormat;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * created by wwang on 2012-9-27 Detailled comment
  *
  */
 public class TalendXSSFSheetXMLHandler extends XSSFSheetXMLHandler {
+    private static final Set<String> TYPES_TO_SKIP_NON_DATES = new HashSet<>(Arrays.asList("b", "e", "inlineStr", "s", "str"));
 
     private final TalendSheetContentsHandler output;
+
     /**
      * put here date pattern for studio\talend columns
      * we pass it to parser and during the date parse parser will use them instead of internal one
      */
     private final Map<Integer, DateFormat> columnDateFormats;
+
     private final StylesTable stylesTable;
+
     private final DataFormatter formatter;
 
     /**
@@ -100,14 +107,13 @@ public class TalendXSSFSheetXMLHandler extends XSSFSheetXMLHandler {
             }
 
             DateFormat format = columnDateFormats.get(columnIndex);
-            if (formatString != null && (cellType == null)
-                    && DateUtil.isADateFormat(formatIndex, formatString) && format != null) {
+            if (formatString != null && !TYPES_TO_SKIP_NON_DATES.contains(cellType) && DateUtil.isADateFormat(formatIndex, formatString)
+                    && format != null) {
                 lastChangedFormatString = formatString;
                 formatter.addFormat(formatString, format);
             }
         }
     }
-
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
