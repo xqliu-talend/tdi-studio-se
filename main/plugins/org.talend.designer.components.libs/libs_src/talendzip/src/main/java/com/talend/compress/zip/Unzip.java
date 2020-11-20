@@ -97,6 +97,7 @@ public class Unzip {
 		}
 
 		ZipFile zipFile = new ZipFile(sourceZip);
+        zipFile.setFileNameCharset(encording);
 
 		if (checkArchive) {
 			if (!zipFile.isValidZipFile()) {
@@ -117,6 +118,7 @@ public class Unzip {
 
 		for (int i = 0; i < fileHeaderList.size(); i++) {
 			FileHeader fileHeader = (FileHeader) fileHeaderList.get(i);
+//            fileHeader.getExtraDataRecords().get(0)
 			String filename = fileHeader.getFileName();
 			if (verbose) {
 				System.out.println("Source file  : " + filename);
